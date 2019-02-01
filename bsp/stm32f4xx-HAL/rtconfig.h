@@ -84,10 +84,9 @@
 #define RT_DFS_ELM_USE_LFN 3
 #define RT_DFS_ELM_MAX_LFN 255
 #define RT_DFS_ELM_DRIVES 2
-#define RT_DFS_ELM_MAX_SECTOR_SIZE 512
+#define RT_DFS_ELM_MAX_SECTOR_SIZE 4096
 #define RT_DFS_ELM_USE_ERASE
 #define RT_DFS_ELM_REENTRANT
-#define RT_USING_DFS_DEVFS
 
 /* Device Drivers */
 
@@ -98,7 +97,9 @@
 #define RT_SERIAL_RB_BUFSZ 64
 #define RT_USING_PIN
 #define RT_USING_SPI
-#define RT_USING_W25QXX
+#define RT_USING_SFUD
+#define RT_SFUD_USING_SFDP
+#define RT_SFUD_USING_FLASH_INFO_TABLE
 
 /* Using WiFi */
 
