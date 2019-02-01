@@ -9,10 +9,17 @@
  */
 #include <rtthread.h>
 #include <board.h>
+#include <dfs_fs.h>
 
 int main(void)
 {
     /* user app entry */
-
+    if (dfs_mount("flash0", "/", "elm", 0, 0) == 0)
+    {
+        rt_kprintf("flash0 mount to /.\n");
+    }
+    else
+        rt_kprintf("flash0 mount to / failed.\n");
+    return 0;
     return 0;
 }
