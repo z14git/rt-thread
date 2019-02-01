@@ -87,6 +87,7 @@
 #define RT_DFS_ELM_MAX_SECTOR_SIZE 4096
 #define RT_DFS_ELM_USE_ERASE
 #define RT_DFS_ELM_REENTRANT
+#define RT_USING_DFS_ROMFS
 
 /* Device Drivers */
 
