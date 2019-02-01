@@ -10,16 +10,25 @@
 #include <rtthread.h>
 #include <board.h>
 #include <dfs_fs.h>
+#include "dfs_romfs.h"
 
 int main(void)
 {
     /* user app entry */
-    if (dfs_mount("flash0", "/", "elm", 0, 0) == 0)
+    if (dfs_mount(RT_NULL, "/", "rom", 0, &(romfs_root)) == 0)
     {
-        rt_kprintf("flash0 mount to /.\n");
+        rt_kprintf("ROM file system initializated!\n");
     }
     else
-        rt_kprintf("flash0 mount to / failed.\n");
+    {
+        rt_kprintf("ROM file system initializate failed!\n");
+    }
+    if (dfs_mount("flash0", "/w25", "elm", 0, 0) == 0)
+    {
+        rt_kprintf("flash0 mount to /w25.\n");
+    }
+    else
+        rt_kprintf("flash0 mount to /w25 failed.\n");
     return 0;
     return 0;
 }
