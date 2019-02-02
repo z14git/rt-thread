@@ -169,6 +169,7 @@
 
 /* System Module */
 
+#define MICROPYTHON_USING_UOS
 
 /* Tools Module */
 
