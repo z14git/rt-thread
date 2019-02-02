@@ -11,6 +11,7 @@
 #include <board.h>
 #include <dfs_fs.h>
 #include "dfs_romfs.h"
+#include "finsh.h"
 
 int main(void)
 {
@@ -25,3 +26,18 @@ int main(void)
     }
     return 0;
 }
+
+int mw25(int argc, char **argv)
+{
+    if (dfs_mount("flash0", "/w25", "elm", 0, 0) == 0)
+    {
+        rt_kprintf("flash0 mount to /w25.\n");
+    }
+    else
+    {
+        rt_kprintf("flash0 mount to /w25 failed.\n");
+    }
+
+    return 0;
+}
+MSH_CMD_EXPORT(mw25, mount w25);
