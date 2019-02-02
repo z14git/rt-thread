@@ -162,6 +162,21 @@
 
 /* language packages */
 
+#define PKG_USING_MICROPYTHON
+
+/* Hardware Module */
+
+
+/* System Module */
+
+
+/* Tools Module */
+
+
+/* Network Module */
+
+#define PKG_MICROPYTHON_HEAP_SIZE 8192
+#define PKG_USING_MICROPYTHON_LATEST_VERSION
 
 /* multimedia packages */
 
