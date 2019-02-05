@@ -12,6 +12,8 @@
 #include <rtthread.h>
 #include <rtdevice.h>
 #include <board.h>
+#include <dfs_fs.h>
+#include "finsh.h"
 
 /* defined the LED0 pin: PH10 */
 #define LED0_PIN    GET_PIN(H, 10)
@@ -32,3 +34,18 @@ int main(void)
 
     return RT_EOK;
 }
+
+int mw25(int argc, char **argv)
+{
+    if (dfs_mount("W25Q128", "/", "elm", 0, 0) == 0)
+    {
+        rt_kprintf("W25Q128 mount to /.\n");
+    }
+    else
+    {
+        rt_kprintf("W25Q128 mount to / failed.\n");
+    }
+
+    return 0;
+}
+MSH_CMD_EXPORT(mw25, mount w25);
