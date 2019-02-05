@@ -101,6 +101,9 @@
 #define RT_SERIAL_RB_BUFSZ 64
 #define RT_USING_PIN
 #define RT_USING_RTC
+#define RTC_SYNC_USING_NTP
+#define RTC_NTP_FIRST_SYNC_DELAY 30
+#define RTC_NTP_SYNC_PERIOD 3600
 #define RT_USING_SPI
 #define RT_USING_SFUD
 #define RT_SFUD_USING_SFDP
@@ -121,6 +124,13 @@
 
 /* Socket abstraction layer */
 
+#define RT_USING_SAL
+
+/* protocol stack implement */
+
+#define SAL_USING_LWIP
+#define SAL_SOCKETS_NUM 16
+#define SAL_PROTO_FAMILIES_NUM 4
 
 /* light weight TCP/IP stack */
 
@@ -140,6 +150,7 @@
 #define RT_LWIP_MSKADDR "255.255.255.0"
 #define RT_LWIP_UDP
 #define RT_LWIP_TCP
+#define RT_LWIP_RAW
 #define RT_MEMP_NUM_NETCONN 8
 #define RT_LWIP_PBUF_NUM 16
 #define RT_LWIP_RAW_PCB_NUM 4
@@ -150,7 +161,7 @@
 #define RT_LWIP_TCP_WND 8196
 #define RT_LWIP_TCPTHREAD_PRIORITY 10
 #define RT_LWIP_TCPTHREAD_MBOX_SIZE 8
-#define RT_LWIP_TCPTHREAD_STACKSIZE 1024
+#define RT_LWIP_TCPTHREAD_STACKSIZE 2048
 #define RT_LWIP_ETHTHREAD_PRIORITY 12
 #define RT_LWIP_ETHTHREAD_STACKSIZE 1024
 #define RT_LWIP_ETHTHREAD_MBOX_SIZE 8
@@ -188,6 +199,14 @@
 
 /* Wiced WiFi */
 
+#define PKG_USING_NETUTILS
+#define PKG_NETUTILS_PING
+#define PKG_NETUTILS_TFTP
+#define NETUTILS_TFTP_PORT 69
+#define PKG_NETUTILS_NTP
+#define NETUTILS_NTP_TIMEZONE 8
+#define NETUTILS_NTP_HOSTNAME "cn.ntp.org.cn"
+#define PKG_USING_NETUTILS_LATEST_VERSION
 
 /* IoT Cloud */
 
