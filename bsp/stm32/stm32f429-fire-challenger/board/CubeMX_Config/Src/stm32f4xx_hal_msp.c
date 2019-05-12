@@ -107,7 +107,6 @@ void HAL_MspInit(void)
 */
 void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
 {
-
   GPIO_InitTypeDef GPIO_InitStruct = {0};
   if(hadc->Instance==ADC1)
   {
@@ -139,10 +138,8 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
 * @param hadc: ADC handle pointer
 * @retval None
 */
-
 void HAL_ADC_MspDeInit(ADC_HandleTypeDef* hadc)
 {
-
   if(hadc->Instance==ADC1)
   {
   /* USER CODE BEGIN ADC1_MspDeInit 0 */
@@ -171,7 +168,6 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* hadc)
 */
 void HAL_DMA2D_MspInit(DMA2D_HandleTypeDef* hdma2d)
 {
-
   if(hdma2d->Instance==DMA2D)
   {
   /* USER CODE BEGIN DMA2D_MspInit 0 */
@@ -192,10 +188,8 @@ void HAL_DMA2D_MspInit(DMA2D_HandleTypeDef* hdma2d)
 * @param hdma2d: DMA2D handle pointer
 * @retval None
 */
-
 void HAL_DMA2D_MspDeInit(DMA2D_HandleTypeDef* hdma2d)
 {
-
   if(hdma2d->Instance==DMA2D)
   {
   /* USER CODE BEGIN DMA2D_MspDeInit 0 */
@@ -218,7 +212,6 @@ void HAL_DMA2D_MspDeInit(DMA2D_HandleTypeDef* hdma2d)
 */
 void HAL_ETH_MspInit(ETH_HandleTypeDef* heth)
 {
-
   GPIO_InitTypeDef GPIO_InitStruct = {0};
   if(heth->Instance==ETH)
   {
@@ -284,10 +277,8 @@ void HAL_ETH_MspInit(ETH_HandleTypeDef* heth)
 * @param heth: ETH handle pointer
 * @retval None
 */
-
 void HAL_ETH_MspDeInit(ETH_HandleTypeDef* heth)
 {
-
   if(heth->Instance==ETH)
   {
   /* USER CODE BEGIN ETH_MspDeInit 0 */
@@ -330,7 +321,6 @@ void HAL_ETH_MspDeInit(ETH_HandleTypeDef* heth)
 */
 void HAL_LTDC_MspInit(LTDC_HandleTypeDef* hltdc)
 {
-
   GPIO_InitTypeDef GPIO_InitStruct = {0};
   if(hltdc->Instance==LTDC)
   {
@@ -471,10 +461,8 @@ void HAL_LTDC_MspInit(LTDC_HandleTypeDef* hltdc)
 * @param hltdc: LTDC handle pointer
 * @retval None
 */
-
 void HAL_LTDC_MspDeInit(LTDC_HandleTypeDef* hltdc)
 {
-
   if(hltdc->Instance==LTDC)
   {
   /* USER CODE BEGIN LTDC_MspDeInit 0 */
@@ -549,7 +537,6 @@ void HAL_LTDC_MspDeInit(LTDC_HandleTypeDef* hltdc)
 */
 void HAL_RTC_MspInit(RTC_HandleTypeDef* hrtc)
 {
-
   if(hrtc->Instance==RTC)
   {
   /* USER CODE BEGIN RTC_MspInit 0 */
@@ -570,10 +557,8 @@ void HAL_RTC_MspInit(RTC_HandleTypeDef* hrtc)
 * @param hrtc: RTC handle pointer
 * @retval None
 */
-
 void HAL_RTC_MspDeInit(RTC_HandleTypeDef* hrtc)
 {
-
   if(hrtc->Instance==RTC)
   {
   /* USER CODE BEGIN RTC_MspDeInit 0 */
@@ -596,7 +581,6 @@ void HAL_RTC_MspDeInit(RTC_HandleTypeDef* hrtc)
 */
 void HAL_SD_MspInit(SD_HandleTypeDef* hsd)
 {
-
   GPIO_InitTypeDef GPIO_InitStruct = {0};
   if(hsd->Instance==SDIO)
   {
@@ -644,10 +628,8 @@ void HAL_SD_MspInit(SD_HandleTypeDef* hsd)
 * @param hsd: SD handle pointer
 * @retval None
 */
-
 void HAL_SD_MspDeInit(SD_HandleTypeDef* hsd)
 {
-
   if(hsd->Instance==SDIO)
   {
   /* USER CODE BEGIN SDIO_MspDeInit 0 */
@@ -684,7 +666,6 @@ void HAL_SD_MspDeInit(SD_HandleTypeDef* hsd)
 */
 void HAL_SPI_MspInit(SPI_HandleTypeDef* hspi)
 {
-
   GPIO_InitTypeDef GPIO_InitStruct = {0};
   if(hspi->Instance==SPI5)
   {
@@ -720,10 +701,8 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef* hspi)
 * @param hspi: SPI handle pointer
 * @retval None
 */
-
 void HAL_SPI_MspDeInit(SPI_HandleTypeDef* hspi)
 {
-
   if(hspi->Instance==SPI5)
   {
   /* USER CODE BEGIN SPI5_MspDeInit 0 */
@@ -754,7 +733,6 @@ void HAL_SPI_MspDeInit(SPI_HandleTypeDef* hspi)
 */
 void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base)
 {
-
   if(htim_base->Instance==TIM5)
   {
   /* USER CODE BEGIN TIM5_MspInit 0 */
@@ -804,7 +782,6 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base)
 
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef* htim)
 {
-
   GPIO_InitTypeDef GPIO_InitStruct = {0};
   if(htim->Instance==TIM5)
   {
@@ -837,10 +814,8 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef* htim)
 * @param htim_base: TIM_Base handle pointer
 * @retval None
 */
-
 void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* htim_base)
 {
-
   if(htim_base->Instance==TIM5)
   {
   /* USER CODE BEGIN TIM5_MspDeInit 0 */
@@ -896,7 +871,6 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* htim_base)
 */
 void HAL_UART_MspInit(UART_HandleTypeDef* huart)
 {
-
   GPIO_InitTypeDef GPIO_InitStruct = {0};
   if(huart->Instance==USART1)
   {
@@ -934,10 +908,8 @@ void HAL_UART_MspInit(UART_HandleTypeDef* huart)
 * @param huart: UART handle pointer
 * @retval None
 */
-
 void HAL_UART_MspDeInit(UART_HandleTypeDef* huart)
 {
-
   if(huart->Instance==USART1)
   {
   /* USER CODE BEGIN USART1_MspDeInit 0 */
