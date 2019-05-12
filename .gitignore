@@ -33,4 +33,4 @@ ncscope.*
 
 #ctag files
 tags
-
+*.vscode
