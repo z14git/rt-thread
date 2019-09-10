@@ -163,8 +163,6 @@
 
 /* peripheral libraries and drivers */
 
-/* sensors drivers */
-
 
 /* miscellaneous packages */
 
