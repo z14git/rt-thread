@@ -180,6 +180,7 @@
 
 /* Onboard Peripheral Drivers */
 
+#define BSP_USING_EEPROM
 #define BSP_USING_SPI_FLASH
 
 /* On-chip Peripheral Drivers */
@@ -189,6 +190,9 @@
 #define BSP_USING_UART1
 #define BSP_USING_SPI
 #define BSP_USING_SPI1
+#define BSP_USING_I2C1
+#define BSP_I2C1_SCL_PIN 0
+#define BSP_I2C1_SDA_PIN 1
 
 /* Board extended module Drivers */
 
