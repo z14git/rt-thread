@@ -11,6 +11,7 @@
 #include <rtthread.h>
 #include <rtdevice.h>
 #include <board.h>
+#include <dfs_fs.h>
 
 /* defined the LED0 pin: PD2 */
 #define LED0_PIN    GET_PIN(D, 2)
@@ -20,6 +21,15 @@ int main(void)
     int count = 1;
     /* set LED0 pin mode to output */
     rt_pin_mode(LED0_PIN, PIN_MODE_OUTPUT);
+
+    if (dfs_mount("W25Q128", "/", "elm", 0, 0) == 0)
+    {
+        rt_kprintf("W25Q128 mount to /.\n");
+    }
+    else
+    {
+        rt_kprintf("W25Q128 mount to / failed.\n");
+    }
 
     while (count++)
     {
