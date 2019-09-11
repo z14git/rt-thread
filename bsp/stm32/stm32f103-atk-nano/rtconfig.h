@@ -183,6 +183,15 @@
 
 /* peripheral libraries and drivers */
 
+#define PKG_USING_BUTTON
+#define SINGLE_AND_DOUBLE_TRIGGER
+#define LONG_FREE_TRIGGER
+#define BUTTON_DEBOUNCE_TIME 2
+#define BUTTON_CONTINUOS_CYCLE 1
+#define BUTTON_LONG_CYCLE 1
+#define BUTTON_DOUBLE_TIME 15
+#define BUTTON_LONG_TIME 50
+#define PKG_USING_BUTTON_V101
 
 /* miscellaneous packages */
 
