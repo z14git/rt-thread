@@ -486,6 +486,11 @@
               <FileType>1</FileType>
               <FilePath>applications\oled.c</FilePath>
             </File>
+            <File>
+              <FileName>mouse.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\applications\mouse.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
