@@ -10,8 +10,15 @@
  */
 
 #include <rtthread.h>
-#include "usb_device.h"
-#include "usbd_hid.h"
+#include <rtdevice.h>
+
+#ifndef ULOG_USING_SYSLOG
+#define LOG_TAG "MOUSE"
+#define LOG_LVL LOG_LVL_DBG
+#include <ulog.h>
+#else
+#include <syslog.h>
+#endif /* ULOG_USING_SYSLOG */
 
 #define THREAD_PRIORITY 25
 #define THREAD_STACK_SIZE 2048
@@ -21,7 +28,6 @@
 
 static rt_thread_t tid = RT_NULL;
 
-extern USBD_HandleTypeDef hUsbDeviceFS;
 static uint8_t HID_Buffer[4];
 
 /**
@@ -52,12 +58,24 @@ static void GetPointerData(uint8_t *pbuf)
 /* 线程1的入口函数 */
 static void thread_entry(void *parameter)
 {
-    MX_USB_DEVICE_Init();
+    rt_device_t device = RT_NULL;
+
+    device = rt_device_find("hidd");
+    if (device == RT_NULL)
+    {
+        LOG_D("no hidd device");
+        return;
+    }
+    else
+    {
+        rt_device_open(device, RT_DEVICE_FLAG_WRONLY);
+    }
+
     while (1)
     {
         rt_thread_mdelay(100);
         GetPointerData(HID_Buffer);
-        USBD_HID_SendReport(&hUsbDeviceFS, HID_Buffer, 4);
+        rt_device_write(device, HID_REPORT_ID_MOUSE, HID_Buffer, 4);
     }
 }
 
@@ -72,19 +90,3 @@ int mouse_init(void)
     return 0;
 }
 INIT_APP_EXPORT(mouse_init);
-
-extern PCD_HandleTypeDef hpcd_USB_FS;
-
-/**
-  * @brief This function handles USB low priority or CAN RX0 interrupts.
-  */
-void USB_LP_CAN1_RX0_IRQHandler(void)
-{
-    /* USER CODE BEGIN USB_LP_CAN1_RX0_IRQn 0 */
-    rt_interrupt_enter();
-    /* USER CODE END USB_LP_CAN1_RX0_IRQn 0 */
-    HAL_PCD_IRQHandler(&hpcd_USB_FS);
-    /* USER CODE BEGIN USB_LP_CAN1_RX0_IRQn 1 */
-    rt_interrupt_leave();
-    /* USER CODE END USB_LP_CAN1_RX0_IRQn 1 */
-}
