@@ -101,4 +101,4 @@ static int button_init(void)
     }
     return 0;
 }
-INIT_APP_EXPORT(button_init);
+// INIT_APP_EXPORT(button_init);

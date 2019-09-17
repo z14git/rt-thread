@@ -12,10 +12,9 @@
 #include <rtdevice.h>
 #include <board.h>
 #include <dfs_fs.h>
-#include "oled.h"
 
 /* defined the LED0 pin: PD2 */
-#define LED0_PIN    GET_PIN(D, 2)
+#define LED0_PIN GET_PIN(D, 2)
 
 int main(void)
 {
@@ -42,37 +41,3 @@ int main(void)
 
     return RT_EOK;
 }
-
-static int oled_write(int argc, char **argv)
-{
-    char *p_end;
-    uint8_t x, y;
-    uint8_t data;
-
-    if (argc == 4)
-    {
-        x = strtol(argv[1], &p_end, 0);
-        if (*p_end != '\0')
-        {
-            rt_kprintf("illegal x format: '%s'\r\n", argv[1]);
-            return -1;
-        }
-        y = strtol(argv[2], &p_end, 0);
-        if (*p_end != '\0')
-        {
-            rt_kprintf("illegal y format: '%s'\r\n", argv[1]);
-            return -1;
-        }
-        data = strtol(argv[3], &p_end, 0);
-        if (*p_end != '\0')
-        {
-            rt_kprintf("illegal data format: '%s'\r\n", argv[1]);
-            return -1;
-        }
-
-        OLED_Set_Pos(x, y);
-        OLED_WR_Byte(data, 1);
-    }
-    return 0;
-}
-MSH_CMD_EXPORT(oled_write, oled test);

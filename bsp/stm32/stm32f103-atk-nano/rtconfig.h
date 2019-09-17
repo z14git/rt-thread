@@ -191,6 +191,25 @@
 
 /* peripheral libraries and drivers */
 
+#define PKG_USING_U8G2
+
+/* U8G2 Examples */
+
+
+/* full buffer examples    (fast, large RAM consumption) */
+
+#define U8G2_USING_FRAME_EXAMPLE_GRAPHIC_TEST
+
+/* page buffer examples    (slow, small RAM consumption) */
+
+
+/* u8x8 text only examples (fonts with fixed size)       */
+
+
+/* game examples */
+
+#define PKG_USING_U8G2_LATEST_VERSION
+#define PKG_U8G2_VER_NUM 0x99999
 #define PKG_USING_BUTTON
 #define SINGLE_AND_DOUBLE_TRIGGER
 #define LONG_FREE_TRIGGER
