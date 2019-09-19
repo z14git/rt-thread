@@ -24,7 +24,7 @@
 #define THREAD_STACK_SIZE 2048
 #define THREAD_TIMESLICE 5
 
-#define CURSOR_STEP 5
+#define CURSOR_STEP 4
 
 static rt_thread_t tid = RT_NULL;
 
@@ -48,7 +48,7 @@ static void GetPointerData(uint8_t *pbuf)
     {
         x = -CURSOR_STEP;
     }
-
+    cnt++;
     pbuf[0] = 0;
     pbuf[1] = x;
     pbuf[2] = y;
@@ -73,7 +73,7 @@ static void thread_entry(void *parameter)
 
     while (1)
     {
-        rt_thread_mdelay(100);
+        rt_thread_mdelay(40);
         GetPointerData(HID_Buffer);
         rt_device_write(device, HID_REPORT_ID_MOUSE, HID_Buffer, 4);
     }
