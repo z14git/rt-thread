@@ -30,7 +30,20 @@ int main(void)
     }
     else
     {
-        rt_kprintf("W25Q128 mount to / failed.\n");
+        /* 格式化文件系统 */
+        if (dfs_mkfs("elm", "W25Q128") != 0)
+        {
+            rt_kprintf("create file system failed\n");
+        }
+        rt_kprintf("create file system success\n");
+        if (dfs_mount("W25Q128", "/", "elm", 0, 0) == 0)
+        {
+            rt_kprintf("W25Q128 mount to /.\n");
+        }
+        else
+        {
+            rt_kprintf("W25Q128 mount to / failed.\n");
+        }
     }
 
     while (count++)
