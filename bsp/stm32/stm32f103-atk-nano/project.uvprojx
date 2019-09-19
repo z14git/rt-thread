@@ -311,7 +311,7 @@
           </ArmAdsMisc>
           <Cads>
             <interw>1</interw>
-            <Optim>3</Optim>
+            <Optim>2</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>1</OneElfS>
@@ -337,7 +337,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER, RT_USING_ARM_LIBC, STM32F103xE</Define>
               <Undefine></Undefine>
-              <IncludePath>.;..\..\..\include;applications;.;board;board\CubeMX_Config\Inc;board\ports;..\libraries\HAL_Drivers;..\libraries\HAL_Drivers\config;packages\button-v1.0.1;packages\u8g2-latest;packages\u8g2-latest\port;..\..\..\libcpu\arm\common;..\..\..\libcpu\arm\cortex-m3;..\..\..\components\dfs\include;..\..\..\components\dfs\filesystems\devfs;..\..\..\components\dfs\filesystems\elmfat;..\..\..\components\drivers\include;..\..\..\components\drivers\include;..\..\..\components\drivers\include;..\..\..\components\drivers\spi;..\..\..\components\drivers\include;..\..\..\components\drivers\spi\sfud\inc;..\..\..\components\drivers\include;..\..\..\components\drivers\usb\usbdevice;..\..\..\components\finsh;..\..\..\components\libc\compilers\armlibc;..\..\..\components\libc\compilers\common;..\..\..\components\utilities\ulog;..\libraries\STM32F1xx_HAL\CMSIS\Device\ST\STM32F1xx\Include;..\libraries\STM32F1xx_HAL\STM32F1xx_HAL_Driver\Inc;..\libraries\STM32F1xx_HAL\CMSIS\Include</IncludePath>
+              <IncludePath>.;..\..\..\include;applications;.;board;board\CubeMX_Config\Inc;board\ports;..\libraries\HAL_Drivers;..\libraries\HAL_Drivers\config;packages\u8g2-latest;packages\u8g2-latest\port;..\..\..\libcpu\arm\common;..\..\..\libcpu\arm\cortex-m3;..\..\..\components\dfs\include;..\..\..\components\dfs\filesystems\devfs;..\..\..\components\dfs\filesystems\elmfat;..\..\..\components\drivers\include;..\..\..\components\drivers\include;..\..\..\components\drivers\include;..\..\..\components\drivers\spi;..\..\..\components\drivers\include;..\..\..\components\drivers\spi\sfud\inc;..\..\..\components\drivers\include;..\..\..\components\drivers\usb\usbdevice;..\..\..\components\finsh;..\..\..\components\libc\compilers\armlibc;..\..\..\components\libc\compilers\common;..\..\..\components\utilities\ulog;..\libraries\STM32F1xx_HAL\CMSIS\Device\ST\STM32F1xx\Include;..\libraries\STM32F1xx_HAL\STM32F1xx_HAL_Driver\Inc;..\libraries\STM32F1xx_HAL\CMSIS\Include</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -472,11 +472,6 @@
               <FilePath>applications\bsp_at24cxx.c</FilePath>
             </File>
             <File>
-              <FileName>button.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>applications\button.c</FilePath>
-            </File>
-            <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>applications\main.c</FilePath>
@@ -485,6 +480,11 @@
               <FileName>mouse.c</FileName>
               <FileType>1</FileType>
               <FilePath>applications\mouse.c</FilePath>
+            </File>
+            <File>
+              <FileName>test.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>applications\test.cpp</FilePath>
             </File>
           </Files>
         </Group>
@@ -540,16 +540,6 @@
               <FileName>drv_common.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\libraries\HAL_Drivers\drv_common.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>button_drive</GroupName>
-          <Files>
-            <File>
-              <FileName>button-v1.0.1_button.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>packages\button-v1.0.1\button.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1079,11 +1069,6 @@
               <FileName>u8g2_port.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>packages\u8g2-latest\port\u8g2_port.cpp</FilePath>
-            </File>
-            <File>
-              <FileName>GraphicsTest.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>packages\u8g2-latest\examples\full_buffer\GraphicsTest.cpp</FilePath>
             </File>
           </Files>
         </Group>
