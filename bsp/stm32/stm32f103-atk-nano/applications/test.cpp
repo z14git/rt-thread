@@ -29,6 +29,8 @@
 #define THREAD_TIMESLICE 5
 
 // In u8x8.h #define U8X8_USE_PINS
+/* 使用该版本：https://github.com/z14git/rt-u8g2/commit/f8adcdcdf7e720f54c7cea9e5edb945fa64f0688
+   确保按键可正常触发 */
 #define U8G2_PIN_UP U8X8_PIN_NONE
 #define U8G2_PIN_DOWN GET_PIN(C, 10)
 #define U8G2_PIN_LEFT U8X8_PIN_NONE
