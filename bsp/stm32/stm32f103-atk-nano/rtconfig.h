@@ -198,7 +198,6 @@
 
 /* full buffer examples    (fast, large RAM consumption) */
 
-#define U8G2_USING_FRAME_EXAMPLE_GRAPHIC_TEST
 
 /* page buffer examples    (slow, small RAM consumption) */
 
