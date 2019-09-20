@@ -132,6 +132,28 @@ static void first_screen(void)
     }
 }
 
+/**
+ * @brief 显示 ✘
+ * 
+ */
+static void show_X_mark(void)
+{
+    u8g2.setFont(u8g2_font_tenfatguys_tn);
+    u8g2.print("*");                         // 在u8g2_font_tenfatguys_tn字体下会显示为✘
+    u8g2.setFont(u8g2_font_wqy12_t_gb2312a); //恢复为中文字体
+}
+
+/**
+ * @brief 显示 ✓
+ * 
+ */
+static void show_check_mark(void)
+{
+    u8g2.setFont(u8g2_font_tenfatguys_tn);
+    u8g2.print("/");                         // 在u8g2_font_tenfatguys_tn字体下会显示为✓
+    u8g2.setFont(u8g2_font_wqy12_t_gb2312a); //恢复为中文字体
+}
+
 static void show_scroll_text(const char *str)
 {
     char buf[64]; // there are at most 8 chinese glyphs per line, max buf size is 8*3 = 24
@@ -257,16 +279,21 @@ static void draw_eeprom_test(void)
     }
 }
 
+static void oled_test(void)
+{
+    /* 全屏显示，检测是否有坏点 */
+    u8g2.clearBuffer();
+    u8g2.drawBox(0, 0, u8g2.getDisplayWidth(), u8g2.getDisplayHeight());
+    u8g2.sendBuffer();
+}
+
 static void draw_oled_test(void)
 {
     uint8_t sel;
     sel = u8g2.userInterfaceMessage("说明\n该测试检测屏幕是否有", "坏点", "", "确认\n返回");
     if (sel == SELECT_CONFIRM_BUTTON)
     {
-        /* 全屏显示，检测是否有坏点 */
-        u8g2.clearBuffer();
-        u8g2.drawBox(0, 0, u8g2.getDisplayWidth(), u8g2.getDisplayHeight());
-        u8g2.sendBuffer();
+        oled_test();
         rt_thread_mdelay(2000);
     }
     return;
@@ -404,12 +431,77 @@ static void draw_db9_test(void)
     show_scroll_text(db9_test_explain);
 }
 
+static void auto_test(void)
+{
+    int ret;
+    /* OLED测试 */
+    oled_test();
+
+    /* 蜂鸣器测试 */
+    rt_pin_mode(BEEP_PIN, PIN_MODE_OUTPUT);
+    for (uint8_t i = 0; i < 2; i++)
+    {
+        rt_pin_write(BEEP_PIN, PIN_HIGH); //蜂鸣器响
+        rt_thread_mdelay(500);
+        rt_pin_write(BEEP_PIN, PIN_LOW); //关闭蜂鸣器
+        rt_thread_mdelay(500);
+    }
+
+    u8g2.clearBuffer();
+
+    /* SPI FLASH测试 */
+    ret = exec_spi_flash_test();
+    u8g2.setCursor(0, 15);
+    if (ret != 0)
+    {
+        u8g2.print("SPI FLASH 测试失败");
+        show_X_mark();
+    }
+    else
+    {
+        u8g2.print("SPI FLASH 测试成功");
+        show_check_mark();
+    }
+    u8g2.sendBuffer();
+
+    /* EEPROM测试 */
+    ret = exec_eeprom_test();
+    u8g2.setCursor(0, 30);
+    if (ret != 0)
+    {
+        u8g2.print("EEPROM 测试失败");
+        show_X_mark();
+    }
+    else
+    {
+        u8g2.print("EEPROM 测试成功");
+        show_check_mark();
+    }
+    u8g2.sendBuffer();
+
+    u8g2.setCursor(0, 50);
+    u8g2.print("按KEY4进入下一页");
+    u8g2.sendBuffer();
+
+    for (;;)
+    {
+        int8_t event;
+        event = u8g2.getMenuEvent();
+        if (event == U8X8_MSG_GPIO_MENU_SELECT)
+        {
+            break;
+        }
+        rt_thread_mdelay(10);
+    }
+}
+
 static void thread_entry(void *parameter)
 {
     u8g2.begin(/*Select=*/U8G2_PIN_SELECT, /*Right/Next=*/U8G2_PIN_RIGHT, /*Left/Prev=*/U8G2_PIN_LEFT, /*Up=*/U8G2_PIN_UP, /*Down=*/U8G2_PIN_DOWN, /*Home/Cancel=*/U8G2_PIN_HOME);
     u8g2.enableUTF8Print();                  // enable UTF8 support for the Arduino print() function
     u8g2.setFont(u8g2_font_wqy12_t_gb2312a); // check https://github.com/larryli/u8g2_wqy for details
     u8g2.setFontDirection(0);
+    auto_test();
     first_screen();
 
     while (1)
