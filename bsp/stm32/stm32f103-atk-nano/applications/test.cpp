@@ -47,6 +47,19 @@
 #define SELECT_CONFIRM_BUTTON 1
 #define SELECT_RETURN_BUTTON 2
 
+/**
+ * @brief 文泉驿点阵宋体
+ * check https://github.com/larryli/u8g2_wqy for details
+ * 
+ */
+#define CHINESE_FONT u8g2_font_wqy12_t_gb2312a
+
+/**
+ * @brief 显示✓✘用
+ * check https://github.com/olikraus/u8g2/wiki/fntgrpgeoff#tenfatguys for detail
+ */
+#define SYMBOL_FONT u8g2_font_tenfatguys_tn
+
 // Check https://github.com/olikraus/u8g2/wiki/u8g2setupcpp for all supported devices
 // U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, U8X8_PIN_NONE);
 static U8G2_SH1106_128X64_NONAME_F_4W_SW_SPI u8g2(U8G2_R2,
@@ -138,9 +151,9 @@ static void first_screen(void)
  */
 static void show_X_mark(void)
 {
-    u8g2.setFont(u8g2_font_tenfatguys_tn);
-    u8g2.print("*");                         // 在u8g2_font_tenfatguys_tn字体下会显示为✘
-    u8g2.setFont(u8g2_font_wqy12_t_gb2312a); //恢复为中文字体
+    u8g2.setFont(SYMBOL_FONT);
+    u8g2.print("*");            // 在u8g2_font_tenfatguys_tn字体下会显示为✘
+    u8g2.setFont(CHINESE_FONT); //恢复为中文字体
 }
 
 /**
@@ -149,9 +162,9 @@ static void show_X_mark(void)
  */
 static void show_check_mark(void)
 {
-    u8g2.setFont(u8g2_font_tenfatguys_tn);
-    u8g2.print("/");                         // 在u8g2_font_tenfatguys_tn字体下会显示为✓
-    u8g2.setFont(u8g2_font_wqy12_t_gb2312a); //恢复为中文字体
+    u8g2.setFont(SYMBOL_FONT);
+    u8g2.print("/");            // 在u8g2_font_tenfatguys_tn字体下会显示为✓
+    u8g2.setFont(CHINESE_FONT); //恢复为中文字体
 }
 
 static void show_scroll_text(const char *str)
@@ -498,8 +511,8 @@ static void auto_test(void)
 static void thread_entry(void *parameter)
 {
     u8g2.begin(/*Select=*/U8G2_PIN_SELECT, /*Right/Next=*/U8G2_PIN_RIGHT, /*Left/Prev=*/U8G2_PIN_LEFT, /*Up=*/U8G2_PIN_UP, /*Down=*/U8G2_PIN_DOWN, /*Home/Cancel=*/U8G2_PIN_HOME);
-    u8g2.enableUTF8Print();                  // enable UTF8 support for the Arduino print() function
-    u8g2.setFont(u8g2_font_wqy12_t_gb2312a); // check https://github.com/larryli/u8g2_wqy for details
+    u8g2.enableUTF8Print(); // enable UTF8 support for the Arduino print() function
+    u8g2.setFont(CHINESE_FONT);
     u8g2.setFontDirection(0);
     auto_test();
     first_screen();
