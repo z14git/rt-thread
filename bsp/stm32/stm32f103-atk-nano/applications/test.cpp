@@ -62,7 +62,7 @@
 
 // Check https://github.com/olikraus/u8g2/wiki/u8g2setupcpp for all supported devices
 // U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, U8X8_PIN_NONE);
-static U8G2_SH1106_128X64_NONAME_F_4W_SW_SPI u8g2(U8G2_R2,
+static U8G2_SH1106_128X64_NONAME_F_4W_SW_SPI u8g2(U8G2_R0,
                                                   /* clock=*/OLED_SPI_PIN_CLK,
                                                   /* data=*/OLED_SPI_PIN_MOSI,
                                                   /* cs=*/OLED_SPI_PIN_CS,
