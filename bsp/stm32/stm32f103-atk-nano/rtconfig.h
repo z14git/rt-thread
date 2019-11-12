@@ -207,8 +207,13 @@
 
 /* game examples */
 
-#define PKG_USING_U8G2_LATEST_VERSION
-#define PKG_U8G2_VER_NUM 0x99999
+#define PKG_USING_U8G2_CPP_LATEST_VERSION
+
+/* C   version: v1.x.x */
+
+/* C++ version: v2.x.x */
+
+#define PKG_U8G2_VER_NUM 0x29999
 
 /* miscellaneous packages */
 
