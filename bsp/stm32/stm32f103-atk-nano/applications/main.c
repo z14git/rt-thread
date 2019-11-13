@@ -99,7 +99,7 @@ static void module_test_thread_entry(void *parameter)
             // get module info
             if (current_module->ops->read != RT_NULL)
             {
-                // todo
+                current_module->ops->read(0, &fro_module_info_str);
             }
             fro_module_name = current_module->name;
         }
