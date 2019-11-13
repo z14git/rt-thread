@@ -110,4 +110,4 @@ static int fro_module_type_init(void)
     rt_pin_mode(PC5, PIN_MODE_INPUT);
     return 0;
 }
-INIT_APP_EXPORT(fro_module_type_init);
+INIT_ENV_EXPORT(fro_module_type_init);
