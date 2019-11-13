@@ -12,10 +12,17 @@
 #include <rtdevice.h>
 #include <board.h>
 #include <dfs_fs.h>
+#include "fro_module.h"
 
 /* defined the LED0 pin: PD2 */
 #define LED0_PIN GET_PIN(D, 2)
 #define LED1_PIN GET_PIN(C, 13)
+
+#define THREAD_PRIORITY 25
+#define THREAD_STACK_SIZE 2048
+#define THREAD_TIMESLICE 5
+
+static rt_thread_t tid = RT_NULL;
 
 int main(void)
 {
@@ -65,3 +72,63 @@ int main(void)
 
     return RT_EOK;
 }
+
+static void module_test_thread_entry(void *parameter)
+{
+    fro_module_t current_module = RT_NULL;
+    fro_module_t last_module = RT_NULL;
+    struct rt_workqueue *wq = RT_NULL;
+    struct rt_work work;
+
+    wq = rt_workqueue_create("moduleWork", 1024, 25);
+    if (wq == RT_NULL)
+        return;
+
+    for (;;)
+    {
+        current_module = get_current_module();
+        if (current_module != RT_NULL)
+        {
+            if (last_module != current_module)
+            {
+                if (last_module->ops->init != RT_NULL)
+                    current_module->ops->init();
+                rt_work_init(&work, current_module->ops->run, RT_NULL);
+                rt_workqueue_dowork(wq, &work);
+            }
+            // get module info
+            if (current_module->ops->read != RT_NULL)
+            {
+                // todo
+            }
+            fro_module_name = current_module->name;
+        }
+        else
+        {
+            if (last_module != RT_NULL)
+            {
+                rt_workqueue_cancel_work(wq, &work);
+                if (last_module->ops->deinit != RT_NULL)
+                    last_module->ops->deinit();
+            }
+            fro_module_name = "";
+            fro_module_info_str = "";
+        }
+        last_module = current_module;
+
+        rt_thread_mdelay(200);
+    }
+}
+
+static int module_test_init(void)
+{
+
+    tid = rt_thread_create("ModuleTest",
+                            module_test_thread_entry, RT_NULL,
+                            THREAD_STACK_SIZE,
+                            THREAD_PRIORITY, THREAD_TIMESLICE);
+    if (tid != RT_NULL)
+        rt_thread_startup(tid);
+    return 0;
+}
+INIT_APP_EXPORT(module_test_init);

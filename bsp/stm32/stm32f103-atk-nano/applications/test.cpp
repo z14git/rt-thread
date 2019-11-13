@@ -14,6 +14,7 @@
 #include <U8g2lib.h>
 #include "board.h"
 #include "bsp_at24cxx.h"
+#include "fro_module.h"
 #include <dfs_posix.h> /* 当需要使用文件操作时，需要包含这个头文件 */
 
 #ifndef ULOG_USING_SYSLOG
@@ -508,12 +509,8 @@ static void auto_test(void)
     }
 }
 
-static void thread_entry(void *parameter)
+static void board_test_thread_entry(void *parameter)
 {
-    u8g2.begin(/*Select=*/U8G2_PIN_SELECT, /*Right/Next=*/U8G2_PIN_RIGHT, /*Left/Prev=*/U8G2_PIN_LEFT, /*Up=*/U8G2_PIN_UP, /*Down=*/U8G2_PIN_DOWN, /*Home/Cancel=*/U8G2_PIN_HOME);
-    u8g2.enableUTF8Print(); // enable UTF8 support for the Arduino print() function
-    u8g2.setFont(CHINESE_FONT);
-    u8g2.setFontDirection(0);
     auto_test();
     first_screen();
 
@@ -557,14 +554,53 @@ static void thread_entry(void *parameter)
     }
 }
 
-int u8g2_init(void)
+static void module_info_thread(void *parameter)
 {
-    tid = rt_thread_create("u8g2",
-                           thread_entry, RT_NULL,
-                           THREAD_STACK_SIZE,
-                           THREAD_PRIORITY, THREAD_TIMESLICE);
+    for (;;)
+    {
+        u8g2.clearBuffer();
+        u8g2.setCursor(0, 15);
+        u8g2.print("当前设备:");
+        u8g2.setCursor(12, 30);
+        u8g2.print(fro_module_name);
+        u8g2.setCursor(0, 45);
+        u8g2.print("设备信息:");
+        u8g2.setCursor(12, 60);
+        u8g2.print(fro_module_info_str);
+        u8g2.sendBuffer();
+        rt_thread_mdelay(100);
+    }
+}
+
+static void u8g2_init(void)
+{
+    u8g2.begin(/*Select=*/U8G2_PIN_SELECT, /*Right/Next=*/U8G2_PIN_RIGHT, /*Left/Prev=*/U8G2_PIN_LEFT, /*Up=*/U8G2_PIN_UP, /*Down=*/U8G2_PIN_DOWN, /*Home/Cancel=*/U8G2_PIN_HOME);
+    u8g2.enableUTF8Print(); // enable UTF8 support for the Arduino print() function
+    u8g2.setFont(CHINESE_FONT);
+    u8g2.setFontDirection(0);
+}
+
+static int test_init(void)
+{
+    u8g2_init();
+
+    if (get_current_module() == RT_NULL)
+    {
+        tid = rt_thread_create("BoardTest",
+                               board_test_thread_entry, RT_NULL,
+                               THREAD_STACK_SIZE,
+                               THREAD_PRIORITY, THREAD_TIMESLICE);
+    }
+    else
+    {
+        tid = rt_thread_create("ModuleInfo",
+                               module_info_thread, RT_NULL,
+                               THREAD_STACK_SIZE,
+                               THREAD_PRIORITY, THREAD_TIMESLICE);
+    }
     if (tid != RT_NULL)
         rt_thread_startup(tid);
+
     return 0;
 }
-INIT_APP_EXPORT(u8g2_init);
+INIT_APP_EXPORT(test_init);
