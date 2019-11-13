@@ -21,21 +21,21 @@ extern "C"
     typedef enum
     {
         M_NONE = 0X3F,           // 无
-        M_DCFAN = 0X3E,          // 风扇模块
+        M_FAN = 0X3E,            // 风扇模块
         M_SMOG = 0X3D,           // 烟雾
         M_HUMITURE = 0X3B,       // 温湿度传感器
         M_BODY = 0X2F,           // 人体
         M_GESTURE = 0X1F,        // 手势
         M_BUZZER = 0X2E,         // 蜂鸣器
         M_ILLUMINANCE = 0X37,    // 光照
-        M_VOICE = 0X3C,          // 声音
-        M_INFRARED_TR_RV = 0X3A, // 红外对射
+        M_VOLUME = 0X3C,         // 声音
+        M_INFRARED_LIMIT = 0X3A, // 红外对射
         M_INFRARED_TRANS = 0X2D, // 红外发射
         M_INFRARED_RECV = 0X1D,  // 红外接收
         M_RGB_LIGHT = 0X1E,      // RGB灯
         M_FLAME = 0X39,          // 火焰
-        M_COMB_GAS = 0X33,       // 可燃气体
-        M_MONS_COND = 0X35,      // 结露
+        M_FUEL_GAS = 0X33,       // 可燃气体
+        M_CONDENSATION = 0X35,   // 结露
         M_PM25 = 0X0B,           // pm2.5
         M_RFID = 0X29,           // RFID
     } FRO_MODULE_TYPE;
