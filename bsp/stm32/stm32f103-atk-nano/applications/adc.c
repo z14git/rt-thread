@@ -13,7 +13,7 @@
 
 ADC_HandleTypeDef hadc1;
 
-int adc_init(void)
+int adc_init(uint8_t ch)
 {
 
     /* USER CODE BEGIN ADC1_Init 0 */
@@ -40,7 +40,7 @@ int adc_init(void)
     }
     /** Configure Regular Channel 
   */
-    sConfig.Channel = ADC_CHANNEL_0;
+    sConfig.Channel = ch;
     sConfig.Rank = ADC_REGULAR_RANK_1;
     sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
     if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)

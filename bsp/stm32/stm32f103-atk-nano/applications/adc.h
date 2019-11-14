@@ -19,7 +19,7 @@ extern "C"
 
 #include "board.h"
 
-    int adc_init(void);
+    int adc_init(uint8_t ch);
     void adc_deinit(void);
     uint16_t get_adc(uint8_t ch);
 
