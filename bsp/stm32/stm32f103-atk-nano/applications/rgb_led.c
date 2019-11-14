@@ -1,7 +1,7 @@
 /**
  * @file rgb_led.c
  * @author z14git
- * @brief 
+ * @brief RGB灯模块
  * @version 0.1
  * @date 2019-11-12
  * 
