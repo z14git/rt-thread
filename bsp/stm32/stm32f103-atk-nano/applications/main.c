@@ -92,7 +92,16 @@ static void module_test_thread_entry(void *parameter)
         {
             if (last_module != current_module)
             {
-                if (last_module->ops->init != RT_NULL)
+                if (last_module != RT_NULL)
+                {
+                    // 处理识别错误的情况（偶尔接触不良会发生这种情况）
+                    work_status = 0;
+                    rt_workqueue_cancel_work_sync(wq, &work);
+                    if (last_module->ops->deinit != RT_NULL)
+                        last_module->ops->deinit();
+                }
+
+                if (current_module->ops->init != RT_NULL)
                     current_module->ops->init();
                 rt_work_init(&work, current_module->ops->run, &work_status);
                 work_status = 1;
