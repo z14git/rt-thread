@@ -42,7 +42,7 @@ static uint8_t get_fro_module_type(void)
         module_type |= rt_pin_read(PC4) << 4;
         module_type |= rt_pin_read(PC5) << 5;
 
-        rt_thread_mdelay(5);
+        rt_thread_mdelay(100);
 
         tmp = 0;
         tmp |= rt_pin_read(PC0) << 0;
