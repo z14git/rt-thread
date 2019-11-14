@@ -79,6 +79,7 @@ static void module_test_thread_entry(void *parameter)
     fro_module_t last_module = RT_NULL;
     struct rt_workqueue *wq = RT_NULL;
     struct rt_work work;
+    uint32_t work_status;
 
     wq = rt_workqueue_create("moduleWork", 1024, 25);
     if (wq == RT_NULL)
@@ -93,7 +94,8 @@ static void module_test_thread_entry(void *parameter)
             {
                 if (last_module->ops->init != RT_NULL)
                     current_module->ops->init();
-                rt_work_init(&work, current_module->ops->run, RT_NULL);
+                rt_work_init(&work, current_module->ops->run, &work_status);
+                work_status = 1;
                 rt_workqueue_dowork(wq, &work);
             }
             // get module info
@@ -107,7 +109,8 @@ static void module_test_thread_entry(void *parameter)
         {
             if (last_module != RT_NULL)
             {
-                rt_workqueue_cancel_work(wq, &work);
+                work_status = 0;
+                rt_workqueue_cancel_work_sync(wq, &work);
                 if (last_module->ops->deinit != RT_NULL)
                     last_module->ops->deinit();
             }
