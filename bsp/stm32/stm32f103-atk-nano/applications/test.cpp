@@ -559,13 +559,13 @@ static void module_info_thread(void *parameter)
     for (;;)
     {
         u8g2.clearBuffer();
-        u8g2.setCursor(0, 15);
+        u8g2.setCursor(0, 12);
         u8g2.print("当前设备:");
-        u8g2.setCursor(12, 30);
+        u8g2.setCursor(0, 27);
         u8g2.print(fro_module_name);
-        u8g2.setCursor(0, 45);
+        u8g2.setCursor(0, 48);
         u8g2.print("设备信息:");
-        u8g2.setCursor(12, 60);
+        u8g2.setCursor(0, 63);
         u8g2.print(fro_module_info_str);
         u8g2.sendBuffer();
         rt_thread_mdelay(100);
