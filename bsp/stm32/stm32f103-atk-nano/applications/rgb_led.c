@@ -35,6 +35,8 @@ static int rgb_init(void)
 
 static void rgb_run(struct rt_work *work, void *param)
 {
+    uint32_t *ptr_work_status;
+    ptr_work_status = work->work_data;
     for (;;)
     {
         rt_pin_write(B_LED_PIN, PIN_LOW);
@@ -49,6 +51,8 @@ static void rgb_run(struct rt_work *work, void *param)
         rt_pin_write(G_LED_PIN, PIN_HIGH);
         rt_pin_write(R_LED_PIN, PIN_LOW);
         rt_thread_mdelay(500);
+        if (*ptr_work_status == 0)
+            break;
     }
 }
 
