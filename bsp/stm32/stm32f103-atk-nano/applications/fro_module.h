@@ -29,6 +29,7 @@ extern "C"
         M_BUZZER = 0X2E,         // 蜂鸣器
         M_ILLUMINANCE = 0X37,    // 光照
         M_VOLUME = 0X3C,         // 声音
+        M_IR_REFLECT = 0X36,     // 红外反射
         M_INFRARED_LIMIT = 0X3A, // 红外对射
         M_INFRARED_TRANS = 0X2D, // 红外发射
         M_INFRARED_RECV = 0X1D,  // 红外接收
