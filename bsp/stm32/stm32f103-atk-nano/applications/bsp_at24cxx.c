@@ -21,7 +21,7 @@
 #endif /* ULOG_USING_SYSLOG */
 
 #define AT24CXX_ADDR (0xa0 >> 1)
-#define AT24CXX_I2CBUS_NAME "i2c1" /* 与drv_i2c.c中的名称一致 */
+#define AT24CXX_I2CBUS_NAME "i2c2"
 
 static struct rt_i2c_bus_device *at24cxx_i2c_bus;
 
