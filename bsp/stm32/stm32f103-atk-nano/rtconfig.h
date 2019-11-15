@@ -242,8 +242,11 @@
 #define BSP_USING_SPI
 #define BSP_USING_SPI1
 #define BSP_USING_I2C1
-#define BSP_I2C1_SCL_PIN 0
-#define BSP_I2C1_SDA_PIN 1
+#define BSP_I2C1_SCL_PIN 1
+#define BSP_I2C1_SDA_PIN 0
+#define BSP_USING_I2C2
+#define BSP_I2C2_SCL_PIN 24
+#define BSP_I2C2_SDA_PIN 25
 
 /* Board extended module Drivers */
 
