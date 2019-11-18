@@ -3,6 +3,8 @@ menu "Hardware Drivers Config"
 config SOC_STM32F427II
     bool
     select SOC_SERIES_STM32F4
+    select RT_USING_COMPONENTS_INIT
+    select RT_USING_USER_MAIN
     default y
 
 menu "Onboard Peripheral Drivers"
@@ -59,6 +61,19 @@ menu "On-chip Peripheral Drivers"
                 bool "Enable UART1 RX DMA"
                 depends on BSP_USING_UART1 && RT_SERIAL_USING_DMA
                 default n
+        endif
+
+    menuconfig BSP_USING_CAN
+            bool "Enable CAN"
+            default n
+            select RT_USING_CAN
+            if BSP_USING_CAN
+                config BSP_USING_CAN1
+                    bool "using CAN1"
+                    default n
+                config BSP_USING_CAN2
+                    bool "using CAN2"
+                    default n
         endif
 
     menuconfig BSP_USING_PWM
