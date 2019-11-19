@@ -31,7 +31,7 @@ static char buf[16];
 
 static int ir_recv_init(void)
 {
-    // rt_pin_mode(RECV_PIN, PIN_MODE_INPUT);
+    rt_pin_mode(RECV_PIN, PIN_MODE_INPUT);
     drv_infrared_init();
     return 0;
 }
