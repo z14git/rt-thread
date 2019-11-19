@@ -101,10 +101,12 @@
 #define RT_USING_SERIAL
 #define RT_SERIAL_USING_DMA
 #define RT_SERIAL_RB_BUFSZ 64
+#define RT_USING_HWTIMER
 #define RT_USING_I2C
 #define RT_USING_I2C_BITOPS
 #define RT_USING_PIN
 #define RT_USING_ADC
+#define RT_USING_PWM
 #define RT_USING_SPI
 #define RT_USING_SFUD
 #define RT_SFUD_USING_SFDP
@@ -215,6 +217,22 @@
 /* C++ version: v2.x.x */
 
 #define PKG_U8G2_VER_NUM 0x29999
+#define PKG_USING_INFRARED
+
+/* Select infrared decoder */
+
+#define INFRARED_NEC_DECODER
+#define NEC_DEVIATION 200
+#define PKG_USING_DRV_INFRARED
+#define INFRARED_SEND
+#define INFRARED_SEND_PWM "pwm2"
+#define INFRARED_PWM_DEV_CHANNEL 2
+#define INFRARED_SEND_HWTIMER "timer3"
+#define INFRARED_MAX_SEND_SIZE 1000
+#define INFRARED_RECEIVE
+#define INFRARED_RECEIVE_PIN 0
+#define INFRARED_RECEIVE_HWTIMER "timer4"
+#define PKG_USING_INFRARED_LATEST_VERSION
 
 /* miscellaneous packages */
 
@@ -239,6 +257,12 @@
 #define BSP_USING_USBD_FS
 #define BSP_USING_UART
 #define BSP_USING_UART1
+#define BSP_USING_TIM
+#define BSP_USING_TIM3
+#define BSP_USING_TIM4
+#define BSP_USING_PWM
+#define BSP_USING_PWM2
+#define BSP_USING_PWM2_CH2
 #define BSP_USING_SPI
 #define BSP_USING_SPI1
 #define BSP_USING_I2C1
