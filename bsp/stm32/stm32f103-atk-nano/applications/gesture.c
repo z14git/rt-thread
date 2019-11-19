@@ -121,9 +121,9 @@ static void gesture_deinit(void)
 {
     rt_pin_mode(SDA_PIN, PIN_MODE_INPUT);
     rt_pin_mode(SCL_PIN, PIN_MODE_INPUT);
-    rt_pin_mode(INT_PIN, PIN_MODE_INPUT);
     rt_pin_irq_enable(INT_PIN, PIN_IRQ_DISABLE);
     rt_pin_detach_irq(INT_PIN);
+    rt_pin_mode(INT_PIN, PIN_MODE_INPUT);
     rt_sem_delete(sid);
 }
 
