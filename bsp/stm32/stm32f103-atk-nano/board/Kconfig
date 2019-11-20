@@ -43,7 +43,7 @@ menu "On-chip Peripheral Drivers"
         select RT_USING_PIN
         default y
 
-    config BSP_USING_USBD_FS
+    config BSP_USING_USBD
         bool "Enable USB Device"
         select RT_USING_USB_DEVICE
         default n

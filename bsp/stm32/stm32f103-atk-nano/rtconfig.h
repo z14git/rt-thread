@@ -254,7 +254,7 @@
 /* On-chip Peripheral Drivers */
 
 #define BSP_USING_GPIO
-#define BSP_USING_USBD_FS
+#define BSP_USING_USBD
 #define BSP_USING_UART
 #define BSP_USING_UART1
 #define BSP_USING_TIM
