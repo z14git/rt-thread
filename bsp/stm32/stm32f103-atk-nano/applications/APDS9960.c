@@ -659,7 +659,6 @@ int readGesture()
         } else {
     
             /* Determine best guessed gesture and clean up */
-            rt_thread_mdelay(FIFO_PAUSE_TIME);
             decodeGesture();
             motion = gesture_motion_;
 
@@ -922,6 +921,6 @@ int wireWriteDataByte(unsigned char reg, unsigned char val)
     if (rt_i2c_transfer(apds9960_i2c_bus, msgs, 2) == 2) {
         return val[0];
     } else {
-        return 0xff;
+        return 0xfe; // 末位为0，可确保当模块被移除时，readGesture()中gstatus末位为0，从而进快结束线程
     }
 }
