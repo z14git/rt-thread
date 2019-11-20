@@ -242,6 +242,31 @@ static int exec_eeprom_test(void)
 #define TEST_DATA2 (0xcc)
     int ret;
     uint8_t buf;
+
+    /* 先读取0和1地址的数据，判断是否为期望的数据 */
+    ret = at24cxx_read_byte(0, &buf);
+    if (ret != 0)
+    {
+        return ret;
+    }
+    if (buf != TEST_DATA1)
+    {
+        goto __write_test;
+    }
+    ret = at24cxx_read_byte(1, &buf);
+    if (ret != 0)
+    {
+        return ret;
+    }
+    if (buf != TEST_DATA2)
+    {
+        goto __write_test;
+    }
+    /* 读取的数据符合期望，省略写入测试 */
+    return 0;
+
+/* 若读取的数据与期望数据不一致，则进行写入测试 */
+__write_test:
     ret = at24cxx_write_byte(0, TEST_DATA1);
     if (ret != 0)
     {
@@ -257,12 +282,12 @@ static int exec_eeprom_test(void)
         return -10;
     }
 
-    ret = at24cxx_write_byte(0, TEST_DATA2);
+    ret = at24cxx_write_byte(1, TEST_DATA2);
     if (ret != 0)
     {
         return ret;
     }
-    ret = at24cxx_read_byte(0, &buf);
+    ret = at24cxx_read_byte(1, &buf);
     if (ret != 0)
     {
         return ret;
