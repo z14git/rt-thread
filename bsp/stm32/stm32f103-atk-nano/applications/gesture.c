@@ -124,7 +124,11 @@ static void gesture_deinit(void)
     rt_pin_irq_enable(INT_PIN, PIN_IRQ_DISABLE);
     rt_pin_detach_irq(INT_PIN);
     rt_pin_mode(INT_PIN, PIN_MODE_INPUT);
-    rt_sem_delete(sid);
+    if (sid != RT_NULL)
+    {
+        rt_sem_delete(sid);
+        sid = RT_NULL;
+    }
 }
 
 static const struct fro_module_ops gesture_ops =
