@@ -25,30 +25,22 @@ int main(void)
     rt_pin_mode(LED0_PIN, PIN_MODE_OUTPUT);
     rt_pin_mode(LED1_PIN, PIN_MODE_OUTPUT);
 
-    if (dfs_mount("W25Q128", "/", "elm", 0, 0) == 0)
-    {
+    if (dfs_mount("W25Q128", "/", "elm", 0, 0) == 0) {
         rt_kprintf("W25Q128 mount to /.\n");
-    }
-    else
-    {
+    } else {
         /* 格式化文件系统 */
-        if (dfs_mkfs("elm", "W25Q128") != 0)
-        {
+        if (dfs_mkfs("elm", "W25Q128") != 0) {
             rt_kprintf("create file system failed\n");
         }
         rt_kprintf("create file system success\n");
-        if (dfs_mount("W25Q128", "/", "elm", 0, 0) == 0)
-        {
+        if (dfs_mount("W25Q128", "/", "elm", 0, 0) == 0) {
             rt_kprintf("W25Q128 mount to /.\n");
-        }
-        else
-        {
+        } else {
             rt_kprintf("W25Q128 mount to / failed.\n");
         }
     }
 
-    while (count++)
-    {
+    while (count++) {
         /* LED灯测试 */
         rt_pin_write(LED0_PIN, PIN_HIGH);
         rt_pin_write(LED1_PIN, PIN_HIGH);
@@ -58,8 +50,7 @@ int main(void)
         rt_thread_mdelay(500);
 
         /* 每3秒发送一次'hola'，用于DB9测试 */
-        if (count % 3 == 0)
-        {
+        if (count % 3 == 0) {
             rt_kprintf("hola\n");
         }
     }

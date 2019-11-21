@@ -4,9 +4,9 @@
  * @brief 红外反射传感器
  * @version 0.1
  * @date 2019-11-14
- * 
+ *
  * @copyright Copyright (c) 2019
- * 
+ *
  */
 
 #include <rtthread.h>
@@ -17,7 +17,7 @@
 #define SENSOR_PIN GET_PIN(A, 0)
 
 static struct fro_module ir_reflect;
-static char buf[12];
+static char              buf[12];
 
 static int ir_reflect_init(void)
 {
@@ -35,30 +35,26 @@ static void ir_reflect_deinit(void)
 
 static int ir_reflect_read(void *cmd, void *data)
 {
-    if (rt_pin_read(SENSOR_PIN) == PIN_LOW)
-    {
+    if (rt_pin_read(SENSOR_PIN) == PIN_LOW) {
         rt_snprintf(buf, 12, "有障碍");
-    }
-    else
-    {
+    } else {
         rt_snprintf(buf, 12, "无障碍");
     }
     *(char **)data = buf;
     return 0;
 }
 
-static const struct fro_module_ops ir_reflect_ops =
-    {
-        ir_reflect_init,
-        ir_reflect_deinit,
-        ir_reflect_run,
-        RT_NULL,
-        ir_reflect_read,
+static const struct fro_module_ops ir_reflect_ops = {
+    ir_reflect_init,
+    ir_reflect_deinit,
+    ir_reflect_run,
+    RT_NULL,
+    ir_reflect_read,
 };
 
 static int ir_reflect_module_init(void)
 {
-    ir_reflect.ops = &ir_reflect_ops;
+    ir_reflect.ops  = &ir_reflect_ops;
     ir_reflect.type = M_IR_REFLECT;
     ir_reflect.name = "红外反射传感器";
 

@@ -4,9 +4,9 @@
  * @brief 风扇模块
  * @version 0.1
  * @date 2019-11-13
- * 
+ *
  * @copyright Copyright (c) 2019
- * 
+ *
  */
 
 #include <rtthread.h>
@@ -14,7 +14,7 @@
 #include <board.h>
 #include "fro_module.h"
 
-#define FAN_PIN GET_PIN(A, 0)
+#define FAN_PIN  GET_PIN(A, 0)
 #define LED_PIN1 GET_PIN(A, 1)
 #define LED_PIN2 GET_PIN(A, 2)
 #define LED_PIN3 GET_PIN(A, 3)
@@ -73,18 +73,17 @@ static void fan_deinit(void)
     rt_pin_mode(LED_PIN3, PIN_MODE_INPUT);
 }
 
-static const struct fro_module_ops fan_ops =
-    {
-        fan_init,
-        fan_deinit,
-        fan_run,
-        RT_NULL,
-        RT_NULL,
+static const struct fro_module_ops fan_ops = {
+    fan_init,
+    fan_deinit,
+    fan_run,
+    RT_NULL,
+    RT_NULL,
 };
 
 static int fan_module_init(void)
 {
-    fan.ops = &fan_ops;
+    fan.ops  = &fan_ops;
     fan.type = M_FAN;
     fan.name = "风扇模块";
 

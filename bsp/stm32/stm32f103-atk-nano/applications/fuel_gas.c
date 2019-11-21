@@ -4,9 +4,9 @@
  * @brief 燃气传感器
  * @version 0.1
  * @date 2019-11-13
- * 
+ *
  * @copyright Copyright (c) 2019
- * 
+ *
  */
 
 #include <rtthread.h>
@@ -18,7 +18,7 @@
 #define FUEL_GAS_SENSOR_CHANNEL ADC_CHANNEL_4
 
 static struct fro_module fuel_gas;
-static char buf[12];
+static char              buf[12];
 
 static int fuel_gas_init(void)
 {
@@ -45,18 +45,17 @@ static int fuel_gas_read(void *cmd, void *data)
     return 0;
 }
 
-static const struct fro_module_ops fuel_gas_ops =
-    {
-        fuel_gas_init,
-        fuel_gas_deinit,
-        fuel_gas_run,
-        RT_NULL,
-        fuel_gas_read,
+static const struct fro_module_ops fuel_gas_ops = {
+    fuel_gas_init,
+    fuel_gas_deinit,
+    fuel_gas_run,
+    RT_NULL,
+    fuel_gas_read,
 };
 
 static int fuel_gas_module_init(void)
 {
-    fuel_gas.ops = &fuel_gas_ops;
+    fuel_gas.ops  = &fuel_gas_ops;
     fuel_gas.type = M_FUEL_GAS;
     fuel_gas.name = "燃气传感器";
 

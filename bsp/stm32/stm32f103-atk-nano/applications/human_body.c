@@ -4,9 +4,9 @@
  * @brief 人体传感器
  * @version 0.1
  * @date 2019-11-13
- * 
+ *
  * @copyright Copyright (c) 2019
- * 
+ *
  */
 
 #include <rtthread.h>
@@ -16,7 +16,7 @@
 
 #define PA0 GET_PIN(A, 0)
 
-static char buf[8];
+static char              buf[8];
 static struct fro_module human_body;
 
 static int human_body_init(void)
@@ -36,30 +36,26 @@ static void human_body_deinit(void)
 
 static int human_body_read(void *cmd, void *data)
 {
-    if (rt_pin_read(PA0) == PIN_HIGH)
-    {
+    if (rt_pin_read(PA0) == PIN_HIGH) {
         rt_snprintf(buf, 12, "无人");
-    }
-    else
-    {
+    } else {
         rt_snprintf(buf, 12, "有人");
     }
     *(char **)data = buf;
     return 0;
 }
 
-static const struct fro_module_ops human_body_ops =
-    {
-        human_body_init,
-        human_body_deinit,
-        human_body_run,
-        RT_NULL,
-        human_body_read,
+static const struct fro_module_ops human_body_ops = {
+    human_body_init,
+    human_body_deinit,
+    human_body_run,
+    RT_NULL,
+    human_body_read,
 };
 
 static int human_body_module_init(void)
 {
-    human_body.ops = &human_body_ops;
+    human_body.ops  = &human_body_ops;
     human_body.type = M_BODY;
     human_body.name = "人体传感器";
 

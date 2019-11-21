@@ -4,9 +4,9 @@
  * @brief 声音传感器
  * @version 0.1
  * @date 2019-11-13
- * 
+ *
  * @copyright Copyright (c) 2019
- * 
+ *
  */
 
 #include <rtthread.h>
@@ -17,7 +17,7 @@
 #define PA0 GET_PIN(A, 0)
 
 static struct fro_module volume;
-static char buf[12];
+static char              buf[12];
 
 static int volume_init(void)
 {
@@ -37,30 +37,26 @@ static void volume_deinit(void)
 
 static int volume_read(void *cmd, void *data)
 {
-    if (rt_pin_read(PA0) == PIN_HIGH)
-    {
+    if (rt_pin_read(PA0) == PIN_HIGH) {
         rt_snprintf(buf, 12, "无声音");
-    }
-    else
-    {
+    } else {
         rt_snprintf(buf, 12, "有声音");
     }
     *(char **)data = buf;
     return 0;
 }
 
-static const struct fro_module_ops volume_ops =
-    {
-        volume_init,
-        volume_deinit,
-        volume_run,
-        RT_NULL,
-        volume_read,
+static const struct fro_module_ops volume_ops = {
+    volume_init,
+    volume_deinit,
+    volume_run,
+    RT_NULL,
+    volume_read,
 };
 
 static int volume_module_init(void)
 {
-    volume.ops = &volume_ops;
+    volume.ops  = &volume_ops;
     volume.type = M_VOLUME;
     volume.name = "声音传感器";
 

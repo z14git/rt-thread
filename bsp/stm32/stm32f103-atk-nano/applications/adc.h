@@ -1,27 +1,26 @@
 /**
  * @file adc.h
  * @author z14git
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2019-11-13
- * 
+ *
  * @copyright Copyright (c) 2019
- * 
+ *
  */
 
 #ifndef __ADC_H
 #define __ADC_H
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 #include "board.h"
 
-    int adc_init(uint8_t ch);
-    void adc_deinit(void);
-    uint16_t get_adc(uint8_t ch);
+int      adc_init(uint8_t ch);
+void     adc_deinit(void);
+uint16_t get_adc(uint8_t ch);
 
 #ifdef __cplusplus
 }

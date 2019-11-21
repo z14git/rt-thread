@@ -4,9 +4,9 @@
  * @brief 烟雾传感器
  * @version 0.1
  * @date 2019-11-13
- * 
+ *
  * @copyright Copyright (c) 2019
- * 
+ *
  */
 
 #include <rtthread.h>
@@ -18,7 +18,7 @@
 #define SMOG_SENSOR_CHANNEL ADC_CHANNEL_4
 
 static struct fro_module smog;
-static char buf[12];
+static char              buf[12];
 
 static int smog_init(void)
 {
@@ -45,18 +45,17 @@ static int smog_read(void *cmd, void *data)
     return 0;
 }
 
-static const struct fro_module_ops smog_ops =
-    {
-        smog_init,
-        smog_deinit,
-        smog_run,
-        RT_NULL,
-        smog_read,
+static const struct fro_module_ops smog_ops = {
+    smog_init,
+    smog_deinit,
+    smog_run,
+    RT_NULL,
+    smog_read,
 };
 
 static int smog_module_init(void)
 {
-    smog.ops = &smog_ops;
+    smog.ops  = &smog_ops;
     smog.type = M_SMOG;
     smog.name = "烟雾传感器";
 

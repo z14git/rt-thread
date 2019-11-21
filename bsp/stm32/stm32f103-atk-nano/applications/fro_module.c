@@ -1,12 +1,12 @@
 /**
  * @file fro_module.c
  * @author z14git
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2019-11-12
- * 
+ *
  * @copyright Copyright (c) 2019
- * 
+ *
  */
 
 #include <rtthread.h>
@@ -21,16 +21,16 @@
 #define PC4 GET_PIN(C, 4)
 #define PC5 GET_PIN(C, 5)
 
-#define THREAD_PRIORITY 25
+#define THREAD_PRIORITY   25
 #define THREAD_STACK_SIZE 2048
-#define THREAD_TIMESLICE 5
+#define THREAD_TIMESLICE  5
 
 static rt_thread_t tid = RT_NULL;
 
 static rt_slist_t _module_list;
 
-const char *fro_module_name = RT_NULL;
-char *fro_module_info_str = RT_NULL;
+const char *fro_module_name     = RT_NULL;
+char *      fro_module_info_str = RT_NULL;
 
 static uint8_t get_fro_module_type(void)
 {
@@ -38,8 +38,7 @@ static uint8_t get_fro_module_type(void)
     uint8_t tmp;
     uint8_t retry = 3;
 
-    do
-    {
+    do {
         module_type = 0;
         module_type |= rt_pin_read(PC0) << 0;
         module_type |= rt_pin_read(PC1) << 1;
@@ -58,8 +57,7 @@ static uint8_t get_fro_module_type(void)
         tmp |= rt_pin_read(PC4) << 4;
         tmp |= rt_pin_read(PC5) << 5;
 
-        if (tmp == module_type)
-        {
+        if (tmp == module_type) {
             return module_type;
         }
 
@@ -81,9 +79,9 @@ int fro_module_register(fro_module_t m)
 
 fro_module_t get_current_module(void)
 {
-    rt_slist_t *module_list = RT_NULL;
+    rt_slist_t * module_list    = RT_NULL;
     fro_module_t current_module = RT_NULL;
-    uint8_t type;
+    uint8_t      type;
 
     type = get_fro_module_type();
 
@@ -120,25 +118,21 @@ INIT_ENV_EXPORT(fro_module_type_init);
 
 static void module_test_thread_entry(void *parameter)
 {
-    fro_module_t current_module = RT_NULL;
-    fro_module_t last_module = RT_NULL;
-    struct rt_workqueue *wq = RT_NULL;
-    struct rt_work work;
-    uint32_t work_status;
+    fro_module_t         current_module = RT_NULL;
+    fro_module_t         last_module    = RT_NULL;
+    struct rt_workqueue *wq             = RT_NULL;
+    struct rt_work       work;
+    uint32_t             work_status;
 
     wq = rt_workqueue_create("m_work", 2048, 24);
     if (wq == RT_NULL)
         return;
 
-    for (;;)
-    {
+    for (;;) {
         current_module = get_current_module();
-        if (current_module != RT_NULL)
-        {
-            if (last_module != current_module)
-            {
-                if (last_module != RT_NULL)
-                {
+        if (current_module != RT_NULL) {
+            if (last_module != current_module) {
+                if (last_module != RT_NULL) {
                     // 处理识别错误的情况（偶尔接触不良会发生这种情况）
                     work_status = 0;
                     rt_workqueue_cancel_work_sync(wq, &work);
@@ -153,22 +147,18 @@ static void module_test_thread_entry(void *parameter)
                 rt_workqueue_dowork(wq, &work);
             }
             // get module info
-            if (current_module->ops->read != RT_NULL)
-            {
+            if (current_module->ops->read != RT_NULL) {
                 current_module->ops->read(0, &fro_module_info_str);
             }
             fro_module_name = current_module->name;
-        }
-        else
-        {
-            if (last_module != RT_NULL)
-            {
+        } else {
+            if (last_module != RT_NULL) {
                 work_status = 0;
                 rt_workqueue_cancel_work_sync(wq, &work);
                 if (last_module->ops->deinit != RT_NULL)
                     last_module->ops->deinit();
             }
-            fro_module_name = "";
+            fro_module_name     = "";
             fro_module_info_str = "";
         }
         last_module = current_module;
@@ -179,11 +169,12 @@ static void module_test_thread_entry(void *parameter)
 
 static int module_test_init(void)
 {
-
     tid = rt_thread_create("m_test",
-                           module_test_thread_entry, RT_NULL,
+                           module_test_thread_entry,
+                           RT_NULL,
                            THREAD_STACK_SIZE,
-                           THREAD_PRIORITY, THREAD_TIMESLICE);
+                           THREAD_PRIORITY,
+                           THREAD_TIMESLICE);
     if (tid != RT_NULL)
         rt_thread_startup(tid);
     return 0;

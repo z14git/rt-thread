@@ -4,9 +4,9 @@
  * @brief RGB灯模块
  * @version 0.1
  * @date 2019-11-12
- * 
+ *
  * @copyright Copyright (c) 2019
- * 
+ *
  */
 
 #include <rtthread.h>
@@ -37,8 +37,7 @@ static void rgb_run(struct rt_work *work, void *param)
 {
     uint32_t *ptr_work_status;
     ptr_work_status = work->work_data;
-    for (;;)
-    {
+    for (;;) {
         rt_pin_write(B_LED_PIN, PIN_LOW);
         rt_pin_write(G_LED_PIN, PIN_HIGH);
         rt_pin_write(R_LED_PIN, PIN_HIGH);
@@ -63,18 +62,17 @@ static void rgb_deinit(void)
     rt_pin_mode(R_LED_PIN, PIN_MODE_INPUT);
 }
 
-static const struct fro_module_ops rgb_ops =
-    {
-        rgb_init,
-        rgb_deinit,
-        rgb_run,
-        RT_NULL,
-        RT_NULL,
+static const struct fro_module_ops rgb_ops = {
+    rgb_init,
+    rgb_deinit,
+    rgb_run,
+    RT_NULL,
+    RT_NULL,
 };
 
 static int rgb_module_init(void)
 {
-    rgb.ops = &rgb_ops;
+    rgb.ops  = &rgb_ops;
     rgb.type = M_RGB_LIGHT;
     rgb.name = "RGB灯模块";
 
