@@ -13,6 +13,7 @@
 #include <rtdevice.h>
 #include <board.h>
 #include "fro_module.h"
+#include "frotech_protocol.h"
 
 #define PC0 GET_PIN(C, 0)
 #define PC1 GET_PIN(C, 1)
@@ -27,7 +28,8 @@
 
 static rt_thread_t tid = RT_NULL;
 
-static rt_slist_t _module_list;
+static rt_slist_t   _module_list;
+static fro_module_t current_module = RT_NULL;
 
 const char *fro_module_name     = RT_NULL;
 char *      fro_module_info_str = RT_NULL;
@@ -96,6 +98,33 @@ fro_module_t get_current_module(void)
     return current_module;
 }
 
+int fro_module_collect_data(uint8_t *              protocol_buf,
+                            protocol_data_node_t **ptr_ptr_node)
+{
+    int      ret      = 0;
+    uint8_t  reg_addr = protocol_buf[3];
+    uint32_t cnt      = protocol_buf[5] << 1;
+    if (current_module == RT_NULL) {
+        return -1;
+    }
+
+    if (current_module->addr != reg_addr) {
+        return -1;
+    }
+
+    if (current_module->ops->read == RT_NULL) {
+        return -1;
+    }
+    ret = current_module->ops->read((void *)cnt, ptr_ptr_node);
+    return ret;
+}
+
+int fro_module_event_process(uint8_t *protocol_buf)
+{
+    /* 该功能暂时未完成 */
+    return 0;
+}
+
 static int fro_module_list_init(void)
 {
     rt_slist_init(&_module_list);
@@ -118,9 +147,8 @@ INIT_ENV_EXPORT(fro_module_type_init);
 
 static void module_test_thread_entry(void *parameter)
 {
-    fro_module_t         current_module = RT_NULL;
-    fro_module_t         last_module    = RT_NULL;
-    struct rt_workqueue *wq             = RT_NULL;
+    fro_module_t         last_module = RT_NULL;
+    struct rt_workqueue *wq          = RT_NULL;
     struct rt_work       work;
     uint32_t             work_status;
 

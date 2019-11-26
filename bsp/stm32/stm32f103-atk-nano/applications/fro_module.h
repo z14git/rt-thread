@@ -56,6 +56,7 @@ struct fro_module
     const struct fro_module_ops *ops;
     uint8_t                      type; // FRO_MODULE_TYPE
     const char *                 name;
+    uint8_t                      addr;
     void *                       user_data; // 备用
 };
 typedef struct fro_module *fro_module_t;
