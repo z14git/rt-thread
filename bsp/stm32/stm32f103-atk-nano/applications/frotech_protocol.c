@@ -32,27 +32,22 @@ static rt_thread_t tid = RT_NULL;
 
 static uint8_t device_addr;
 
-void fro_protocol_handle(void);
-int32_t fro_put_data(uint8_t data);
+int fro_module_collect_data(uint8_t *              protocol_buf,
+                           protocol_data_node_t **ptr_ptr_node);
 
-static rt_err_t uart1_rx_ind(rt_device_t dev, rt_size_t size)
-{
-    rt_sem_release(&rx_sem);
-    return RT_EOK;
-}
+int fro_module_event_process(uint8_t *protocol_buf);
 
-static void rx_handle(void *arg)
+/**
+ * @brief 功能：将接收到的字节放入环形缓冲区。
+ *        该函数只能从串口中断中调用！
+ * @param data 串口中接收到的数据
+ * @return int32_t 成功返回1，失败返回0
+ */
+static int32_t fro_put_data(uint8_t data)
 {
-    uint8_t ch;
-    for (;;)
-    {
-        while (rt_device_read(uart_model, 0, &ch, 1) != 1)
-        {
-            rt_sem_take(&rx_sem, RT_WAITING_FOREVER);
-        }
-        fro_put_data(ch);
-        fro_protocol_handle();
-    }
+    int32_t ret;
+    ret = rt_ringbuffer_putchar_force(&rb, data);
+    return ret;
 }
 
 /**
@@ -282,46 +277,7 @@ static int32_t verify_pack(uint8_t *protocol_buf, uint8_t len)
     }
 }
 
-int32_t fro_protocol_init(void)
-{
-    int32_t ret;
-    rt_ringbuffer_init(&rb, (rt_uint8_t *)rx_ringbuf, sizeof(rx_ringbuf));
-    ret = rt_sem_init(&rx_sem, "rx sem", 0, RT_IPC_FLAG_FIFO);
-    if (RT_EOK != ret) return ret;
-    uart_model = rt_device_find("uart1");
-    if (RT_NULL == uart_model)
-    {
-        return -RT_ERROR;
-    }
-    else
-    {
-        rt_device_init(uart_model);
-        rt_device_open(uart_model, RT_DEVICE_OFLAG_RDWR | RT_DEVICE_FLAG_INT_RX);
-        rt_device_set_rx_indicate(uart_model, uart1_rx_ind);
-    }
-
-    tid = rt_thread_create("rx", rx_handle, (void *)0, THREAD_STACK_SIZE, THREAD_PRIORITY, THREAD_TIMESLICE);
-    if (tid != RT_NULL)
-    {
-        rt_thread_startup(tid);
-    }
-    else
-    {
-        return -RT_ERROR;
-    }
-
-    ret = at24cxx_read_byte(EEPROM_ADDR_OF_DEVICE_ADDR, &device_addr);
-
-    return ret;
-}
-INIT_APP_EXPORT(fro_protocol_init);
-
-int fro_module_collect_data(uint8_t *              protocol_buf,
-                           protocol_data_node_t **ptr_ptr_node);
-
-int fro_module_event_process(uint8_t *protocol_buf);
-
-void fro_protocol_handle(void)
+static void fro_protocol_handle(void)
 {
     static protocol_rx_buf_t protocol_buf;
     uint8_t ret_buf[PROTOCOL_BUF_MAX_LEN];
@@ -455,18 +411,58 @@ void fro_protocol_handle(void)
             }
         }
     }
-
 }
 
-/**
- * @brief 功能：将接收到的字节放入环形缓冲区。
- *        该函数只能从串口中断中调用！
- * @param data 串口中接收到的数据
- * @return int32_t 成功返回1，失败返回0
- */
-int32_t fro_put_data(uint8_t data)
+static rt_err_t uart1_rx_ind(rt_device_t dev, rt_size_t size)
+{
+    rt_sem_release(&rx_sem);
+    return RT_EOK;
+}
+
+static void rx_handle(void *arg)
+{
+    uint8_t ch;
+    for (;;)
+    {
+        while (rt_device_read(uart_model, 0, &ch, 1) != 1)
+        {
+            rt_sem_take(&rx_sem, RT_WAITING_FOREVER);
+        }
+        fro_put_data(ch);
+        fro_protocol_handle();
+    }
+}
+
+int32_t fro_protocol_init(void)
 {
     int32_t ret;
-    ret = rt_ringbuffer_putchar_force(&rb, data);
+    rt_ringbuffer_init(&rb, (rt_uint8_t *)rx_ringbuf, sizeof(rx_ringbuf));
+    ret = rt_sem_init(&rx_sem, "rx sem", 0, RT_IPC_FLAG_FIFO);
+    if (RT_EOK != ret) return ret;
+    uart_model = rt_device_find("uart1");
+    if (RT_NULL == uart_model)
+    {
+        return -RT_ERROR;
+    }
+    else
+    {
+        rt_device_init(uart_model);
+        rt_device_open(uart_model, RT_DEVICE_OFLAG_RDWR | RT_DEVICE_FLAG_INT_RX);
+        rt_device_set_rx_indicate(uart_model, uart1_rx_ind);
+    }
+
+    tid = rt_thread_create("rx", rx_handle, (void *)0, THREAD_STACK_SIZE, THREAD_PRIORITY, THREAD_TIMESLICE);
+    if (tid != RT_NULL)
+    {
+        rt_thread_startup(tid);
+    }
+    else
+    {
+        return -RT_ERROR;
+    }
+
+    ret = at24cxx_read_byte(EEPROM_ADDR_OF_DEVICE_ADDR, &device_addr);
+
     return ret;
 }
+INIT_APP_EXPORT(fro_protocol_init);
