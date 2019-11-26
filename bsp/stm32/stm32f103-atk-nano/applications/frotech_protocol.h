@@ -64,12 +64,6 @@ typedef struct protocol_reg_data_node
 
 typedef struct
 {
-    uint8_t count;
-    protocol_data_node_t *node;
-} protocol_data_list_t;
-
-typedef struct
-{
     protocol_head_type_t head;
     uint8_t reg_addr_hi; // 传感器地址的高8位
     uint8_t reg_addr_lo; // 传感器地址的低8位
@@ -117,10 +111,6 @@ typedef struct
 } protocol_err_type_t;
 
 #pragma pack()
-
-void fro_protocol_handle(void);
-int32_t fro_put_data(uint8_t data);
-int32_t fro_protocol_init(void);
 
 #ifdef __cplusplus
 }
