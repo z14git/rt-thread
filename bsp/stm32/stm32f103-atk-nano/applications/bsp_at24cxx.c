@@ -133,6 +133,7 @@ int at24cxx_hw_init(void)
 }
 INIT_APP_EXPORT(at24cxx_hw_init);
 
+#if defined(RT_USING_FINSH) && defined(FINSH_USING_MSH)
 static int at24_write(int argc, char **argv)
 {
     int32_t ret;
@@ -197,7 +198,7 @@ static int at24_write(int argc, char **argv)
 }
 MSH_CMD_EXPORT(at24_write, write[addr][data1][data2]...);
 
-#define READ_NUM 5
+    #define READ_NUM 5
 
 static int at24_read(int argc, char **argv)
 {
@@ -261,3 +262,4 @@ static int at24_read(int argc, char **argv)
     return 0;
 }
 MSH_CMD_EXPORT(at24_read, read[addr]);
+#endif /* RT_USING_FINSH && FINSH_USING_MSH*/
