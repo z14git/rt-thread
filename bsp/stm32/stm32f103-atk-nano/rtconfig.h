@@ -152,6 +152,8 @@
 
 /* IoT - internet of things */
 
+#define PKG_USING_CJSON
+#define PKG_USING_CJSON_V102
 
 /* Wi-Fi */
 

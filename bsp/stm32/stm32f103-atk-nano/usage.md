@@ -11,6 +11,8 @@ pkgs --update
 
 >infrared 使用 https://github.com/z14git/infrared_framework/tree/aiotlab
 
+>cJSON 使用 https://github.com/z14git/cJSON/tree/lab
+
 ```
 scons --target=mdk5 -s
 ```
