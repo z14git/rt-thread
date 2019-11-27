@@ -18,6 +18,9 @@ extern "C" {
 
 #include <board.h>
 
+#define JSON_MODE
+
+#ifndef JSON_MODE
 #define PROTOCOL_READ_LEN 8
 #define PROTOCOL_WRITE_BASE_LEN 7
 #define PROTOCOL_SET_ADDR_LEN 6
@@ -111,6 +114,11 @@ typedef struct
 } protocol_err_type_t;
 
 #pragma pack()
+#endif /* ndef JSON_MODE */
+#ifdef JSON_MODE
+
+#endif /* ndef JSON_MODE */
+
 
 #ifdef __cplusplus
 }

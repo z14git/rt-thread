@@ -14,6 +14,7 @@
 #include <board.h>
 #include "fro_module.h"
 #include "frotech_protocol.h"
+#include "cJSON_util.h"
 
 #define PC0 GET_PIN(C, 0)
 #define PC1 GET_PIN(C, 1)
@@ -98,6 +99,113 @@ fro_module_t get_current_module(void)
     return current_module;
 }
 
+int fro_module_handler(cJSON *req_json, cJSON **reply)
+{
+    cJSON *name = RT_NULL;
+
+    /* 处理请求相关 */
+    cJSON *requests = RT_NULL;
+    cJSON *request  = RT_NULL;
+    /* 处理返回相关 */
+    cJSON *ret_json   = RT_NULL;
+    cJSON *datapoints = RT_NULL;
+    // cJSON * datapoint  = RT_NULL;
+    double datapoint_value = RT_NULL;
+    int    ret;
+
+    if (current_module == RT_NULL) {
+        ret = -1;
+        goto __end;
+    }
+    /* 判断请求命令的设备名称是否与模块名称一致 */
+    name = cJSON_GetObjectItemCaseSensitive(req_json, "name");
+    if (!cJSON_IsString(name) || (name->valuestring == RT_NULL)) {
+        ret = -1;
+        goto __end;
+    }
+    if (rt_strcmp(current_module->name, name->valuestring)) {
+        ret = -1;
+        goto __end;
+    }
+
+    requests = cJSON_GetObjectItemCaseSensitive(req_json, "requests");
+    if (requests != RT_NULL && cJSON_IsArray(requests)) {
+        /* 返回示例：
+            {
+                "addr": 1, //这部分暂时不用准备，由上层应用(frotech_protocol.c)处理
+                "name": "led",
+                "datapoints": [
+                    {
+                        "id": "on-off",
+                        "value": 1
+                    },
+                    {
+                        "id": "brightness",
+                        "value": 50
+                    }
+                ]
+            }
+         */
+        cJSON *ret_json = cJSON_CreateObject();
+        if (cJSON_AddStringToObject(ret_json, "name", name->valuestring) ==
+            RT_NULL) {
+            ret = -1;
+            goto __end;
+        }
+        datapoints = cJSON_AddArrayToObject(ret_json, "datapoints");
+        if (datapoints == RT_NULL) {
+            ret = -1;
+            goto __end;
+        }
+
+        cJSON_ArrayForEach(request, requests)
+        {
+            if (current_module->ops->read == RT_NULL) {
+                ret = -1;
+                goto __end;
+            }
+            cJSON *id = cJSON_GetObjectItemCaseSensitive(request, "id");
+            if (!cJSON_IsString(id) || (id->valuestring == RT_NULL)) {
+                ret = -1;
+                goto __end;
+            }
+
+            cJSON *datapoint = cJSON_CreateObject();
+            if (datapoint == RT_NULL) {
+                ret = -1;
+                goto __end;
+            }
+
+            ret = current_module->ops->read(id->valuestring, &datapoint_value);
+            if (ret != 0) {
+                goto __end;
+            }
+
+            if (cJSON_AddStringToObject(datapoint, "id", id->valuestring) ==
+                RT_NULL) {
+                ret = -1;
+                goto __end;
+            }
+            if (cJSON_AddNumberToObject(datapoint, "value", datapoint_value) ==
+                RT_NULL) {
+                ret = -1;
+                goto __end;
+            }
+
+            cJSON_AddItemToArray(datapoints, datapoint);
+        }
+        *reply = ret_json;
+        return 0;
+    } else {
+        ret = -1;
+    }
+__end:
+    // cJSON_Delete(req_json);
+    cJSON_Delete(ret_json);
+    return ret;
+}
+
+#ifndef JSON_MODE
 int fro_module_collect_data(uint8_t *              protocol_buf,
                             protocol_data_node_t **ptr_ptr_node)
 {
@@ -124,6 +232,7 @@ int fro_module_event_process(uint8_t *protocol_buf)
     /* 该功能暂时未完成 */
     return 0;
 }
+#endif /* ndef JSON_MODE */
 
 static int fro_module_list_init(void)
 {

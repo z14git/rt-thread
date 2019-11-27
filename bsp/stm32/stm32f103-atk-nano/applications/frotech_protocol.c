@@ -13,6 +13,9 @@
 #include "rtdevice.h"
 #include "crc.h"
 #include "bsp_at24cxx.h"
+#ifdef JSON_MODE
+    #include "cJSON_util.h"
+#endif
 
 #define THREAD_PRIORITY   5
 #define THREAD_STACK_SIZE 4096
@@ -24,7 +27,7 @@
 #define EEPROM_ADDR_OF_DEVICE_ADDR 3 /* 设备的Modbus地址保存在EEPROM中的地址 */
 
 static struct rt_ringbuffer rb;
-static uint8_t              rx_ringbuf[50];
+static uint8_t              rx_ringbuf[512];
 
 static rt_device_t         uart_model;
 static struct rt_semaphore rx_sem;
@@ -32,10 +35,14 @@ static rt_thread_t         tid = RT_NULL;
 
 static uint8_t device_addr;
 
+#ifndef JSON_MODE
+
 int fro_module_collect_data(uint8_t *              protocol_buf,
                             protocol_data_node_t **ptr_ptr_node);
 
 int fro_module_event_process(uint8_t *protocol_buf);
+
+#endif /* ndef JSON_MODE */
 
 /**
  * @brief 功能：将接收到的字节放入环形缓冲区。
@@ -50,6 +57,7 @@ static int32_t fro_put_data(uint8_t data)
     return ret;
 }
 
+#ifndef JSON_MODE
 /**
  * @brief 获取一段完整的指令
  *
@@ -386,6 +394,127 @@ static void fro_protocol_handle(void)
         }
     }
 }
+#endif /* ndef JSON_MODE */
+
+#ifdef JSON_MODE
+    #define BUF_LEN 256
+static char json_string_buf[BUF_LEN];
+
+/**
+ * @brief 从环形缓冲区中获取json对象
+ * @note 使用完cJSON*后记得用cJSON_Delete释放该对象
+ * @param rb 环形缓冲区
+ * @return cJSON* json对象
+ */
+static cJSON *get_json_from_ringbuf(struct rt_ringbuffer *rb)
+{
+    uint8_t         tmp_len, tmp_data;
+    uint32_t        ms;
+    int             ret;
+    cJSON *         json = RT_NULL;
+    static uint32_t timeout_ms;
+    static uint8_t  protocol_cnt     = 0;
+    static uint8_t  brace_start_flag = 0;
+    static uint8_t  brace_cnt        = 0;
+
+    if (RT_NULL == rb) {
+        return RT_NULL;
+    }
+
+    ms = HAL_GetTick();
+    if (brace_start_flag) {
+        if (ELAPSED(ms, timeout_ms)) {
+            goto __exit;
+        }
+    }
+
+    tmp_len = rt_ringbuffer_data_len(rb);
+    if (0 == tmp_len) {
+        return RT_NULL;
+    }
+
+    for (int i = 0; i < tmp_len; i++) {
+        ret = rt_ringbuffer_getchar(rb, &tmp_data);
+        if (0 != ret) {
+            timeout_ms = ms + 500;
+            if (brace_start_flag) {
+                json_string_buf[protocol_cnt++] = tmp_data;
+                if (tmp_data == '}') {
+                    brace_cnt--;
+                }
+                if (tmp_data == '{') {
+                    brace_cnt++;
+                }
+                if (brace_cnt == 0) {
+                    /* '{}'数量匹配则当接收了一段json字符串，将该字符串转为json对象 */
+                    json_string_buf[protocol_cnt] = 0;
+                    json = cJSON_Parse(json_string_buf);
+                    goto __exit;
+                }
+
+                if (protocol_cnt >= BUF_LEN - 1) {
+                    /* 字符串过长，放弃接收 */
+                    goto __exit;
+                }
+            } else {
+                if (tmp_data == '{') {
+                    brace_start_flag                = 1;
+                    json_string_buf[protocol_cnt++] = tmp_data;
+                    brace_cnt++;
+                }
+            }
+        }
+    }
+    return json;
+
+__exit:
+    protocol_cnt     = 0;
+    brace_cnt        = 0;
+    brace_start_flag = 0;
+    return json;
+}
+int fro_module_handler(cJSON *req_json, cJSON **reply);
+
+static void fro_protocol_handle(void)
+{
+    cJSON *  addr       = RT_NULL;
+    cJSON *  req_json   = RT_NULL;
+    cJSON *  reply_json = RT_NULL;
+    char *   string     = RT_NULL;
+    int      ret;
+    uint16_t old_flag;
+
+    req_json = get_json_from_ringbuf(&rb);
+    if (req_json == RT_NULL) {
+        goto __end;
+    }
+    addr = cJSON_GetObjectItemCaseSensitive(req_json, "addr");
+    if (!cJSON_IsNumber(addr)) {
+        goto __end;
+    }
+    if (addr->valuedouble != 0 && addr->valuedouble != device_addr) {
+        goto __end;
+    }
+
+    ret = fro_module_handler(req_json, &reply_json);
+    if (ret != 0) {
+        goto __end;
+    }
+    if (cJSON_AddNumberToObject(reply_json, "addr", device_addr) == RT_NULL) {
+        goto __end;
+    }
+    string   = cJSON_Print(reply_json);
+    old_flag = uart_model->open_flag;
+    uart_model->open_flag =
+        RT_DEVICE_OFLAG_RDWR | RT_DEVICE_FLAG_INT_RX | RT_DEVICE_FLAG_STREAM;
+    rt_device_write(uart_model, 0, string, rt_strnlen(string, 512));
+    uart_model->open_flag = old_flag;
+__end:
+    cJSON_Delete(req_json);
+    cJSON_Delete(reply_json);
+    return;
+}
+#endif /* JSON_MODE */
 
 static rt_err_t uart1_rx_ind(rt_device_t dev, rt_size_t size)
 {
