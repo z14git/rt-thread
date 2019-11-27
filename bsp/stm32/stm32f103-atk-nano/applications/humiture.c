@@ -201,4 +201,4 @@ static int humiture_module_init(void)
     fro_module_register(&humiture);
     return 0;
 }
-INIT_APP_EXPORT(humiture_module_init);
+INIT_COMPONENT_EXPORT(humiture_module_init);

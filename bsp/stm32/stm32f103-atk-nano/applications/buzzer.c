@@ -187,4 +187,4 @@ static int buzzer_module_init(void)
     fro_module_register(&buzzer);
     return 0;
 }
-INIT_APP_EXPORT(buzzer_module_init);
+INIT_COMPONENT_EXPORT(buzzer_module_init);

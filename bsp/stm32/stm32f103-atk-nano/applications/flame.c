@@ -62,4 +62,4 @@ static int flame_module_init(void)
     fro_module_register(&flame);
     return 0;
 }
-INIT_APP_EXPORT(flame_module_init);
+INIT_COMPONENT_EXPORT(flame_module_init);

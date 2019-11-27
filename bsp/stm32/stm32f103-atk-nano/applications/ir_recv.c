@@ -85,4 +85,4 @@ static int ir_recv_module_init(void)
     fro_module_register(&ir_recv);
     return 0;
 }
-INIT_APP_EXPORT(ir_recv_module_init);
+INIT_COMPONENT_EXPORT(ir_recv_module_init);

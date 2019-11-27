@@ -62,4 +62,4 @@ static int smog_module_init(void)
     fro_module_register(&smog);
     return 0;
 }
-INIT_APP_EXPORT(smog_module_init);
+INIT_COMPONENT_EXPORT(smog_module_init);

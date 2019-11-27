@@ -62,4 +62,4 @@ static int ir_limit_module_init(void)
     fro_module_register(&ir_limit);
     return 0;
 }
-INIT_APP_EXPORT(ir_limit_module_init);
+INIT_COMPONENT_EXPORT(ir_limit_module_init);

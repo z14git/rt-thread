@@ -62,4 +62,4 @@ static int human_body_module_init(void)
     fro_module_register(&human_body);
     return 0;
 }
-INIT_APP_EXPORT(human_body_module_init);
+INIT_COMPONENT_EXPORT(human_body_module_init);

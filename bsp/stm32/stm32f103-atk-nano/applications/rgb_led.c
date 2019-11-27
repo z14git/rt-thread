@@ -79,4 +79,4 @@ static int rgb_module_init(void)
     fro_module_register(&rgb);
     return 0;
 }
-INIT_APP_EXPORT(rgb_module_init);
+INIT_COMPONENT_EXPORT(rgb_module_init);

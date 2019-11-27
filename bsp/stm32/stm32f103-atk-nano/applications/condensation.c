@@ -65,4 +65,4 @@ static int condensation_module_init(void)
     fro_module_register(&condensation);
     return 0;
 }
-INIT_APP_EXPORT(condensation_module_init);
+INIT_COMPONENT_EXPORT(condensation_module_init);

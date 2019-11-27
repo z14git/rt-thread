@@ -90,4 +90,4 @@ static int fan_module_init(void)
     fro_module_register(&fan);
     return 0;
 }
-INIT_APP_EXPORT(fan_module_init);
+INIT_COMPONENT_EXPORT(fan_module_init);

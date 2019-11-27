@@ -63,4 +63,4 @@ static int volume_module_init(void)
     fro_module_register(&volume);
     return 0;
 }
-INIT_APP_EXPORT(volume_module_init);
+INIT_COMPONENT_EXPORT(volume_module_init);

@@ -62,4 +62,4 @@ static int fuel_gas_module_init(void)
     fro_module_register(&fuel_gas);
     return 0;
 }
-INIT_APP_EXPORT(fuel_gas_module_init);
+INIT_COMPONENT_EXPORT(fuel_gas_module_init);

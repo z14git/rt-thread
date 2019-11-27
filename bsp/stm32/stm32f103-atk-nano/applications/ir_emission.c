@@ -145,4 +145,4 @@ static int ir_emission_module_init(void)
     fro_module_register(&ir_emission);
     return 0;
 }
-INIT_APP_EXPORT(ir_emission_module_init);
+INIT_COMPONENT_EXPORT(ir_emission_module_init);

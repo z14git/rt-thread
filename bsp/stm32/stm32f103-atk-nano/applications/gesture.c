@@ -136,4 +136,4 @@ static int gesture_module_init(void)
     fro_module_register(&gesture);
     return 0;
 }
-INIT_APP_EXPORT(gesture_module_init);
+INIT_COMPONENT_EXPORT(gesture_module_init);

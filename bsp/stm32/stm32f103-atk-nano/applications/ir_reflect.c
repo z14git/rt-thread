@@ -61,4 +61,4 @@ static int ir_reflect_module_init(void)
     fro_module_register(&ir_reflect);
     return 0;
 }
-INIT_APP_EXPORT(ir_reflect_module_init);
+INIT_COMPONENT_EXPORT(ir_reflect_module_init);
