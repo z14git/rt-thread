@@ -87,7 +87,10 @@ fro_module_t get_current_module(void)
 
 char *get_current_module_name(void)
 {
-    return (char *)(current_module->name);
+    if (current_module != RT_NULL)
+        return (char *)(current_module->name);
+    else
+        return "";
 }
 
 static fro_module_t detect_current_module(void)
