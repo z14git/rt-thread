@@ -13,6 +13,7 @@
 #include <rtdevice.h>
 #include <board.h>
 #include "fro_module.h"
+#include "frotech_protocol.h"
 
 #define PA0 GET_PIN(A, 0)
 
@@ -36,12 +37,19 @@ static void human_body_deinit(void)
 
 static int human_body_read(void *cmd, void *data)
 {
-    if (rt_pin_read(PA0) == PIN_HIGH) {
-        rt_snprintf(buf, 12, "无人");
+    if ((uint32_t)cmd != 0) {
+        if (rt_strcmp((char *)cmd, "value") == 0) {
+            *(double *)data = (rt_pin_read(PA0) == PIN_HIGH) ? 0 : 1;
+            return 0;
+        }
     } else {
-        rt_snprintf(buf, 12, "有人");
+        if (rt_pin_read(PA0) == PIN_HIGH) {
+            rt_snprintf(buf, 12, "无人");
+        } else {
+            rt_snprintf(buf, 12, "有人");
+        }
+        *(char **)data = buf;
     }
-    *(char **)data = buf;
     return 0;
 }
 
