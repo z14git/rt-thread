@@ -103,7 +103,7 @@ int fro_module_handler(cJSON *req_json, cJSON **reply)
 {
     cJSON *name = RT_NULL;
 
-    /* 处理读取请求相关 */
+    /* 处理读取请求 */
     cJSON *requests = RT_NULL;
 
     /* 处理写入请求 */
@@ -128,6 +128,20 @@ int fro_module_handler(cJSON *req_json, cJSON **reply)
         goto __end;
     }
 
+    /* 读取请求示例：
+        {
+            "addr": 1, //这部分由frotech_protocol.c处理
+            "name": "led",
+            "requests": [
+                {
+                    "id": "on-off"
+                },
+                {
+                    "id": "brightness"
+                }
+            ]
+        }
+    */
     requests = cJSON_GetObjectItemCaseSensitive(req_json, "requests");
     if (requests != RT_NULL && cJSON_IsArray(requests)) {
         /* 返回示例：
