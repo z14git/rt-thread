@@ -82,6 +82,11 @@ int fro_module_register(fro_module_t m)
 
 fro_module_t get_current_module(void)
 {
+    return current_module;
+}
+
+static fro_module_t detect_current_module(void)
+{
     rt_slist_t * module_list    = RT_NULL;
     fro_module_t current_module = RT_NULL;
     uint8_t      type;
@@ -324,7 +329,14 @@ static int fro_module_list_init(void)
 }
 INIT_BOARD_EXPORT(fro_module_list_init);
 
-static int fro_module_type_init(void)
+static int fro_module_init(void)
+{
+    current_module = detect_current_module();
+    return RT_EOK;
+}
+INIT_ENV_EXPORT(fro_module_init);
+
+static int fro_module_type_detect_io_init(void)
 {
     rt_pin_mode(PC0, PIN_MODE_INPUT);
     rt_pin_mode(PC1, PIN_MODE_INPUT);
@@ -334,7 +346,7 @@ static int fro_module_type_init(void)
     rt_pin_mode(PC5, PIN_MODE_INPUT);
     return 0;
 }
-INIT_ENV_EXPORT(fro_module_type_init);
+INIT_ENV_EXPORT(fro_module_type_detect_io_init);
 
 static void module_test_thread_entry(void *parameter)
 {
@@ -348,7 +360,7 @@ static void module_test_thread_entry(void *parameter)
         return;
 
     for (;;) {
-        current_module = get_current_module();
+        current_module = detect_current_module();
         if (current_module != RT_NULL) {
             if (last_module != current_module) {
                 if (last_module != RT_NULL) {
