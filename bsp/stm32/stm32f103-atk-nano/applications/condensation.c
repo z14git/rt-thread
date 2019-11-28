@@ -37,12 +37,7 @@ static int condensation_read(void *cmd, void *data)
     uint16_t value;
     value = get_adc(ADC_CHANNEL_0);
 
-    if (value < 4000) {
-        rt_snprintf(buf, 12, "%d", value);
-    } else {
-        value = 68;
-        rt_snprintf(buf, 12, "%d", value);
-    }
+    rt_snprintf(buf, 12, "%d", value);
 
     *(char **)data = buf;
     return 0;
