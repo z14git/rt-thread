@@ -36,12 +36,20 @@ static void flame_deinit(void)
 
 static int flame_read(void *cmd, void *data)
 {
-    if (rt_pin_read(PA0) == PIN_HIGH) {
-        rt_snprintf(buf, 12, "无火焰");
+    if ((uint32_t)cmd != 0) {
+        if (rt_strcmp((char *)cmd, "io") == 0) {
+            *(double *)data = (rt_pin_read(PA0) == PIN_HIGH) ? 0 : 1;
+            return 0;
+        }
+        return -1;
     } else {
-        rt_snprintf(buf, 12, "有火焰");
+        if (rt_pin_read(PA0) == PIN_HIGH) {
+            rt_snprintf(buf, 12, "无火焰");
+        } else {
+            rt_snprintf(buf, 12, "有火焰");
+        }
+        *(char **)data = buf;
     }
-    *(char **)data = buf;
     return 0;
 }
 
