@@ -473,7 +473,7 @@ __exit:
     brace_start_flag = 0;
     return json;
 }
-int fro_module_handler(cJSON *req_json, cJSON **reply);
+int fro_module_handler(cJSON *req_json, cJSON *reply_json);
 
 static void fro_protocol_handle(void)
 {
@@ -495,14 +495,16 @@ static void fro_protocol_handle(void)
     if (addr->valuedouble != 0 && addr->valuedouble != device_addr) {
         goto __end;
     }
-
-    ret = fro_module_handler(req_json, &reply_json);
-    if (ret != 0) {
-        goto __end;
-    }
+    reply_json = cJSON_CreateObject();
     if (cJSON_AddNumberToObject(reply_json, "addr", device_addr) == RT_NULL) {
         goto __end;
     }
+
+    ret = fro_module_handler(req_json, reply_json);
+    if (ret != 0) {
+        goto __end;
+    }
+
     string   = cJSON_Print(reply_json);
     old_flag = uart_model->open_flag;
     uart_model->open_flag =
