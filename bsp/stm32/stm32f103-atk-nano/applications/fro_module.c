@@ -107,7 +107,7 @@ int fro_module_handler(cJSON *req_json, cJSON **reply)
     cJSON *requests = RT_NULL;
     cJSON *request  = RT_NULL;
     /* 处理返回相关 */
-    cJSON *ret_json   = RT_NULL;
+    cJSON *reply_json   = RT_NULL;
     cJSON *datapoints = RT_NULL;
     // cJSON * datapoint  = RT_NULL;
     double datapoint_value = RT_NULL;
@@ -146,13 +146,13 @@ int fro_module_handler(cJSON *req_json, cJSON **reply)
                 ]
             }
          */
-        cJSON *ret_json = cJSON_CreateObject();
-        if (cJSON_AddStringToObject(ret_json, "name", name->valuestring) ==
+        cJSON *reply_json = cJSON_CreateObject();
+        if (cJSON_AddStringToObject(reply_json, "name", name->valuestring) ==
             RT_NULL) {
             ret = -1;
             goto __end;
         }
-        datapoints = cJSON_AddArrayToObject(ret_json, "datapoints");
+        datapoints = cJSON_AddArrayToObject(reply_json, "datapoints");
         if (datapoints == RT_NULL) {
             ret = -1;
             goto __end;
@@ -194,14 +194,14 @@ int fro_module_handler(cJSON *req_json, cJSON **reply)
 
             cJSON_AddItemToArray(datapoints, datapoint);
         }
-        *reply = ret_json;
+        *reply = reply_json;
         return 0;
     } else {
         ret = -1;
     }
 __end:
     // cJSON_Delete(req_json);
-    cJSON_Delete(ret_json);
+    cJSON_Delete(reply_json);
     return ret;
 }
 
