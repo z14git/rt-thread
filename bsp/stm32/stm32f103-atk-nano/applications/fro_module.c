@@ -85,6 +85,11 @@ fro_module_t get_current_module(void)
     return current_module;
 }
 
+char *get_current_module_name(void)
+{
+    return (char *)(current_module->name);
+}
+
 static fro_module_t detect_current_module(void)
 {
     rt_slist_t * module_list    = RT_NULL;

@@ -66,6 +66,7 @@ extern char *      fro_module_info_str;
 
 int          fro_module_register(fro_module_t m);
 fro_module_t get_current_module(void);
+char *get_current_module_name(void);
 
 #ifdef __cplusplus
 }
