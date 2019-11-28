@@ -478,11 +478,12 @@ int fro_module_handler(cJSON *req_json, cJSON *reply_json);
 
 static void fro_protocol_handle(void)
 {
-    cJSON *  addr       = RT_NULL;
-    cJSON *  new_addr   = RT_NULL;
-    cJSON *  req_json   = RT_NULL;
-    cJSON *  reply_json = RT_NULL;
-    char *   string     = RT_NULL;
+    cJSON *  addr         = RT_NULL;
+    cJSON *  acquire_addr = RT_NULL;
+    cJSON *  new_addr     = RT_NULL;
+    cJSON *  req_json     = RT_NULL;
+    cJSON *  reply_json   = RT_NULL;
+    char *   string       = RT_NULL;
     int      ret;
     uint16_t old_flag;
 
@@ -490,6 +491,34 @@ static void fro_protocol_handle(void)
     if (req_json == RT_NULL) {
         goto __end;
     }
+
+    reply_json = cJSON_CreateObject();
+
+    acquire_addr = cJSON_GetObjectItemCaseSensitive(req_json, "acquire_addr");
+    if (acquire_addr != RT_NULL) {
+        /* 接收到读取设备地址指令 */
+        if (!cJSON_IsString(acquire_addr)) {
+            goto __end;
+        }
+        if (*(acquire_addr->valuestring) != '\0') {
+            if (rt_strcmp(acquire_addr->valuestring,
+                          get_current_module_name()) != 0) {
+                goto __end;
+            }
+        }
+        at24cxx_read_byte(EEPROM_ADDR_OF_DEVICE_ADDR, &device_addr);
+        if (cJSON_AddNumberToObject(reply_json, "addr", device_addr) ==
+            RT_NULL) {
+            goto __end;
+        }
+        if (cJSON_AddStringToObject(reply_json,
+                                    "name",
+                                    get_current_module_name()) == RT_NULL) {
+            goto __end;
+        }
+        goto __start_reply;
+    } /* end acquire_addr != RT_NULL */
+
     addr = cJSON_GetObjectItemCaseSensitive(req_json, "addr");
     if (!cJSON_IsNumber(addr)) {
         goto __end;
@@ -498,8 +527,7 @@ static void fro_protocol_handle(void)
         goto __end;
     }
 
-    reply_json = cJSON_CreateObject();
-    new_addr   = cJSON_GetObjectItemCaseSensitive(req_json, "new_addr");
+    new_addr = cJSON_GetObjectItemCaseSensitive(req_json, "new_addr");
     if (new_addr != RT_NULL) {
         /* 接收到写入设备地址命令 */
         if (!cJSON_IsNumber(new_addr)) {
