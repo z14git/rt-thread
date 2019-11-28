@@ -10,6 +10,7 @@
  */
 
 #include "frotech_protocol.h"
+#include "fro_module.h"
 #include "rtdevice.h"
 #include "crc.h"
 #include "bsp_at24cxx.h"
@@ -478,6 +479,7 @@ int fro_module_handler(cJSON *req_json, cJSON *reply_json);
 static void fro_protocol_handle(void)
 {
     cJSON *  addr       = RT_NULL;
+    cJSON *  new_addr   = RT_NULL;
     cJSON *  req_json   = RT_NULL;
     cJSON *  reply_json = RT_NULL;
     char *   string     = RT_NULL;
@@ -495,7 +497,46 @@ static void fro_protocol_handle(void)
     if (addr->valuedouble != 0 && addr->valuedouble != device_addr) {
         goto __end;
     }
+
     reply_json = cJSON_CreateObject();
+    new_addr   = cJSON_GetObjectItemCaseSensitive(req_json, "new_addr");
+    if (new_addr != RT_NULL) {
+        /* 接收到写入设备地址命令 */
+        if (!cJSON_IsNumber(new_addr)) {
+            goto __end;
+        }
+        cJSON *name = cJSON_GetObjectItemCaseSensitive(req_json, "name");
+        if (name != RT_NULL) {
+            /* 有name字段，则要判断是否与当前模块名称一致 */
+            if (!cJSON_IsString(name)) {
+                goto __end;
+            }
+            if (rt_strcmp(name->valuestring, get_current_module_name()) != 0) {
+                goto __end;
+            }
+        }
+        at24cxx_write_byte(EEPROM_ADDR_OF_DEVICE_ADDR, new_addr->valueint);
+        at24cxx_read_byte(EEPROM_ADDR_OF_DEVICE_ADDR, &device_addr);
+        if (cJSON_AddNumberToObject(reply_json, "addr", device_addr) ==
+            RT_NULL) {
+            goto __end;
+        }
+        if (cJSON_AddStringToObject(reply_json,
+                                    "name",
+                                    get_current_module_name()) == RT_NULL) {
+            goto __end;
+        }
+        if (device_addr != new_addr->valueint) {
+            ret = -1;
+        } else {
+            ret = 0;
+        }
+        if (cJSON_AddNumberToObject(reply_json, "errno", ret) == RT_NULL) {
+            goto __end;
+        }
+        goto __start_reply;
+    } /* end if (new_addr != RT_NULL) */
+
     if (cJSON_AddNumberToObject(reply_json, "addr", device_addr) == RT_NULL) {
         goto __end;
     }
@@ -504,7 +545,7 @@ static void fro_protocol_handle(void)
     if (ret != 0) {
         goto __end;
     }
-
+__start_reply:
     string   = cJSON_Print(reply_json);
     old_flag = uart_model->open_flag;
     uart_model->open_flag =
