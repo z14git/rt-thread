@@ -13,6 +13,7 @@
 #include <rtdevice.h>
 #include <board.h>
 #include "fro_module.h"
+#include "frotech_protocol.h"
 
 #define delay_us rt_hw_us_delay
 #define delay_ms(m)                                                            \
@@ -169,15 +170,26 @@ static void humiture_deinit(void)
 
 static int humiture_read(void *cmd, void *data)
 {
-    rt_snprintf(buf,
-                36,
-                "温度:%d.%d℃湿度:%d.%dRH",
-                temperature / 10,
-                temperature % 10,
-                humidity / 10,
-                humidity % 10);
+    if ((uint32_t)cmd != 0) {
+        if (rt_strcmp((char *)cmd, "temperature") == 0) {
+            *(double *)data = (double)temperature / 10;
+            return 0;
+        }
+        if (rt_strcmp((char *)cmd, "humidity") == 0) {
+            *(double *)data = (double)humidity / 10;
+            return 0;
+        }
+    } else {
+        rt_snprintf(buf,
+                    36,
+                    "温度:%d.%d℃湿度:%d.%dRH",
+                    temperature / 10,
+                    temperature % 10,
+                    humidity / 10,
+                    humidity % 10);
 
-    *(char **)data = buf;
+        *(char **)data = buf;
+    }
     return 0;
 }
 
