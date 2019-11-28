@@ -103,15 +103,12 @@ int fro_module_handler(cJSON *req_json, cJSON **reply)
 {
     cJSON *name = RT_NULL;
 
-    /* 处理请求相关 */
+    /* 处理读取请求相关 */
     cJSON *requests = RT_NULL;
-    cJSON *request  = RT_NULL;
-    /* 处理返回相关 */
-    cJSON *reply_json   = RT_NULL;
-    cJSON *datapoints = RT_NULL;
-    // cJSON * datapoint  = RT_NULL;
-    double datapoint_value = RT_NULL;
-    int    ret;
+
+    cJSON *reply_json = RT_NULL;
+
+    int ret;
 
     if (current_module == RT_NULL) {
         ret = -1;
@@ -146,7 +143,10 @@ int fro_module_handler(cJSON *req_json, cJSON **reply)
                 ]
             }
          */
-        cJSON *reply_json = cJSON_CreateObject();
+        cJSON *request         = RT_NULL;
+        cJSON *datapoints      = RT_NULL;
+        double datapoint_value = RT_NULL;
+        reply_json             = cJSON_CreateObject();
         if (cJSON_AddStringToObject(reply_json, "name", name->valuestring) ==
             RT_NULL) {
             ret = -1;
@@ -196,11 +196,10 @@ int fro_module_handler(cJSON *req_json, cJSON **reply)
         }
         *reply = reply_json;
         return 0;
-    } else {
-        ret = -1;
     }
+    return -1;
+
 __end:
-    // cJSON_Delete(req_json);
     cJSON_Delete(reply_json);
     return ret;
 }
