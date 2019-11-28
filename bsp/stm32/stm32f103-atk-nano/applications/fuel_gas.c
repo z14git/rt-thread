@@ -38,10 +38,16 @@ static int fuel_gas_read(void *cmd, void *data)
 {
     uint16_t value;
     value = get_adc(FUEL_GAS_SENSOR_CHANNEL);
+    if ((uint32_t)cmd != 0) {
+        if (rt_strcmp((char *)cmd, "adc") == 0) {
+            *(double *)data = value;
+            return 0;
+        }
+    } else {
+        rt_snprintf(buf, 12, "%d", value);
 
-    rt_snprintf(buf, 12, "%d", value);
-
-    *(char **)data = buf;
+        *(char **)data = buf;
+    }
     return 0;
 }
 
