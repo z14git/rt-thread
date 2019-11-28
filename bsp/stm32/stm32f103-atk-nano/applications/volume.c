@@ -37,12 +37,19 @@ static void volume_deinit(void)
 
 static int volume_read(void *cmd, void *data)
 {
-    if (rt_pin_read(PA0) == PIN_HIGH) {
-        rt_snprintf(buf, 12, "无声音");
+    if ((uint32_t)cmd != 0) {
+        if (rt_strcmp((char *)cmd, "io") == 0) {
+            *(double *)data = (rt_pin_read(PA0) == PIN_HIGH) ? 0 : 1;
+            return 0;
+        }
     } else {
-        rt_snprintf(buf, 12, "有声音");
+        if (rt_pin_read(PA0) == PIN_HIGH) {
+            rt_snprintf(buf, 12, "无声音");
+        } else {
+            rt_snprintf(buf, 12, "有声音");
+        }
+        *(char **)data = buf;
     }
-    *(char **)data = buf;
     return 0;
 }
 
