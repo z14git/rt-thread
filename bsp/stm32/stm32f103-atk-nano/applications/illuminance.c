@@ -37,12 +37,7 @@ static int illuminance_read(void *cmd, void *data)
     uint16_t value;
     value = get_adc(ADC_CHANNEL_0);
 
-    if (value < 2000) {
-        value = 68;
-        rt_snprintf(buf, 12, "%d", value);
-    } else {
-        rt_snprintf(buf, 12, "%d", (value - 2000) * 2);
-    }
+    rt_snprintf(buf, 12, "%d", value);
 
     *(char **)data = buf;
     return 0;
