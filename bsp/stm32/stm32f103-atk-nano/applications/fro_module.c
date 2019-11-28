@@ -106,6 +106,9 @@ int fro_module_handler(cJSON *req_json, cJSON **reply)
     /* 处理读取请求相关 */
     cJSON *requests = RT_NULL;
 
+    /* 处理写入请求 */
+    cJSON *datapoints = RT_NULL;
+
     cJSON *reply_json = RT_NULL;
 
     int ret;
@@ -197,7 +200,81 @@ int fro_module_handler(cJSON *req_json, cJSON **reply)
         *reply = reply_json;
         return 0;
     }
-    return -1;
+
+    /* 写入请求示例：
+        {
+            "addr": 1,
+            "name": "led",
+            "datapoints": [
+                {
+                    "id": "on-off",
+                    "value": 1
+                },
+                {
+                    "id": "brightness",
+                    "value": 50
+                }
+            ]
+        }
+    */
+    datapoints = cJSON_GetObjectItemCaseSensitive(req_json, "datapoints");
+    if (datapoints != RT_NULL && cJSON_IsArray(datapoints)) {
+        /* 返回示例：
+            {
+                "addr": 1,
+                "name": "led",
+                "errno": 0,
+                "error": "succ"
+            }
+        */
+        cJSON *datapoint = RT_NULL;
+
+        reply_json = cJSON_CreateObject();
+        if (cJSON_AddStringToObject(reply_json, "name", name->valuestring) ==
+            RT_NULL) {
+            ret = -1;
+            goto __end;
+        }
+
+        cJSON_ArrayForEach(datapoint, datapoints)
+        {
+            if (current_module->ops->write == RT_NULL) {
+                ret = -1;
+                goto __end;
+            }
+
+            cJSON *id = cJSON_GetObjectItemCaseSensitive(datapoint, "id");
+            if (!cJSON_IsString(id) || (id->valuestring == RT_NULL)) {
+                ret = -1;
+                goto __end;
+            }
+
+            cJSON *value = cJSON_GetObjectItemCaseSensitive(datapoint, "value");
+            if (!cJSON_IsNumber(value)) {
+                ret = -1;
+                goto __end;
+            }
+
+            int wr_value = value->valuedouble;
+            ret =
+                current_module->ops->write(id->valuestring, (void *)(wr_value));
+            if (ret != 0) {
+                if (cJSON_AddNumberToObject(reply_json, "errno", ret) ==
+                    RT_NULL) {
+                    ret = -1;
+                    goto __end;
+                }
+                *reply = reply_json;
+                return 0;
+            }
+        }
+        if (cJSON_AddNumberToObject(reply_json, "errno", ret) == RT_NULL) {
+            ret = -1;
+            goto __end;
+        }
+        *reply = reply_json;
+        return 0;
+    }
 
 __end:
     cJSON_Delete(reply_json);
