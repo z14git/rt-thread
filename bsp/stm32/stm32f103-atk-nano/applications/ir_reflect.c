@@ -35,12 +35,20 @@ static void ir_reflect_deinit(void)
 
 static int ir_reflect_read(void *cmd, void *data)
 {
-    if (rt_pin_read(SENSOR_PIN) == PIN_LOW) {
-        rt_snprintf(buf, 12, "有障碍");
+    if ((uint32_t)cmd != 0) {
+        if (rt_strcmp((char *)cmd, "io") == 0) {
+            *(double *)data = (rt_pin_read(SENSOR_PIN) == PIN_HIGH) ? 0 : 1;
+            return 0;
+        }
+        return -1;
     } else {
-        rt_snprintf(buf, 12, "无障碍");
+        if (rt_pin_read(SENSOR_PIN) == PIN_LOW) {
+            rt_snprintf(buf, 12, "有障碍");
+        } else {
+            rt_snprintf(buf, 12, "无障碍");
+        }
+        *(char **)data = buf;
     }
-    *(char **)data = buf;
     return 0;
 }
 
