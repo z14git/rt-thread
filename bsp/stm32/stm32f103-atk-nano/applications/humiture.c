@@ -179,6 +179,7 @@ static int humiture_read(void *cmd, void *data)
             *(double *)data = (double)humidity / 10;
             return 0;
         }
+        return -1;
     } else {
         rt_snprintf(buf,
                     36,

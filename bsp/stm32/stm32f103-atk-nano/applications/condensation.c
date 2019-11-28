@@ -41,6 +41,7 @@ static int condensation_read(void *cmd, void *data)
             *(double *)data = value;
             return 0;
         }
+        return -1;
     } else {
         rt_snprintf(buf, 12, "%d", value);
 

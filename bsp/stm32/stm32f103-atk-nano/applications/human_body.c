@@ -41,6 +41,7 @@ static int human_body_read(void *cmd, void *data)
             *(double *)data = (rt_pin_read(PA0) == PIN_HIGH) ? 0 : 1;
             return 0;
         }
+        return -1;
     } else {
         if (rt_pin_read(PA0) == PIN_HIGH) {
             rt_snprintf(buf, 12, "无人");
