@@ -136,12 +136,14 @@ static uint16_t freq_tab[12]  = {262,
                                 466,
                                 494}; //原始频率表 CDEFGAB
 static uint8_t  buzzer_volume = 3;
+static int      on_off;
+#define AUTO_MODE 2
 
 static void buzzer_run(struct rt_work *work, void *param)
 {
     uint32_t *ptr_work_status;
     ptr_work_status = work->work_data;
-
+    on_off          = AUTO_MODE;
     /* 查找PWM设备 */
     pwm_device = (struct rt_device_pwm *)rt_device_find(BUZZER_PWM_DEVICE);
     if (pwm_device == RT_NULL) {
@@ -162,6 +164,7 @@ static void buzzer_run(struct rt_work *work, void *param)
         if (*ptr_work_status == 0)
             break;
     }
+    on_off = 0;
 }
 
 static void buzzer_deinit(void)
@@ -170,12 +173,48 @@ static void buzzer_deinit(void)
     rt_pin_mode(PA0, PIN_MODE_INPUT);
 }
 
+static int buzzer_write(void *cmd, void *data)
+{
+    if ((uint32_t)cmd != 0) {
+        if (rt_strcmp((char *)cmd, "on-off") == 0) {
+            if (on_off == AUTO_MODE) {
+                return -1;
+            }
+            if ((int)data == 1) {
+                buzzer_set(freq_tab[9], buzzer_volume);
+                buzzer_on();
+                on_off = (int)data;
+            } else if ((int)data == 0) {
+                on_off = (int)data;
+                buzzer_off();
+            } else {
+                return -1;
+            }
+            return 0;
+        }
+        return -1;
+    }
+    return 0;
+}
+
+static int buzzer_read(void *cmd, void *data)
+{
+    if ((uint32_t)cmd != 0) {
+        if (rt_strcmp((char *)cmd, "on-off") == 0) {
+            *(double *)data = on_off;
+            return 0;
+        }
+        return -1;
+    }
+    return -1;
+}
+
 static const struct fro_module_ops buzzer_ops = {
     buzzer_init,
     buzzer_deinit,
     buzzer_run,
-    RT_NULL,
-    RT_NULL,
+    buzzer_write,
+    buzzer_read,
 };
 
 static int buzzer_module_init(void)
