@@ -36,7 +36,7 @@ static void ir_reflect_deinit(void)
 static int ir_reflect_read(void *cmd, void *data)
 {
     if ((uint32_t)cmd != 0) {
-        if (rt_strcmp((char *)cmd, "io") == 0) {
+        if (rt_strcmp((char *)cmd, "status") == 0) {
             *(double *)data = (rt_pin_read(SENSOR_PIN) == PIN_HIGH) ? 0 : 1;
             return 0;
         }
