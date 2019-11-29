@@ -127,6 +127,9 @@ menu "On-chip Peripheral Drivers"
                 config BSP_USING_PWM2_CH2
                     bool "Enable PWM2 channel2"
                     default n
+                config BSP_USING_PWM2_CH3
+                    bool "Enable PWM2 channel3"
+                    default n
             endif
         endif
 	
