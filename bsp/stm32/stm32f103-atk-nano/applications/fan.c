@@ -57,10 +57,13 @@ static int fan_init(void)
     return 0;
 }
 
+static int on_off;
+
 static void fan_run(struct rt_work *work, void *param)
 {
     fan_on();
     led_on();
+    on_off = 1;
 }
 
 static void fan_deinit(void)
@@ -73,12 +76,44 @@ static void fan_deinit(void)
     rt_pin_mode(LED_PIN3, PIN_MODE_INPUT);
 }
 
+static int fan_write(void *cmd, void *data)
+{
+    if ((uint32_t)cmd != 0) {
+        if (rt_strcmp((char *)cmd, "on-off") == 0) {
+            on_off = (int)data;
+            if (on_off == 1) {
+                fan_on();
+                led_on();
+            } else if (on_off == 0) {
+                fan_off();
+                led_off();
+            } else
+                return -1;
+            return 0;
+        }
+        return -1;
+    }
+    return 0;
+}
+
+static int fan_read(void *cmd, void *data)
+{
+    if ((uint32_t)cmd != 0) {
+        if (rt_strcmp((char *)cmd, "on-off") == 0) {
+            *(double *)data = on_off;
+            return 0;
+        }
+        return -1;
+    }
+    return -1;
+}
+
 static const struct fro_module_ops fan_ops = {
     fan_init,
     fan_deinit,
     fan_run,
-    RT_NULL,
-    RT_NULL,
+    fan_write,
+    fan_read,
 };
 
 static int fan_module_init(void)
