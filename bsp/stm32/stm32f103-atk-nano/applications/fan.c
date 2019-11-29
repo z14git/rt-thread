@@ -80,11 +80,12 @@ static int fan_write(void *cmd, void *data)
 {
     if ((uint32_t)cmd != 0) {
         if (rt_strcmp((char *)cmd, "on-off") == 0) {
-            on_off = (int)data;
-            if (on_off == 1) {
+            if ((int)data == 1) {
+                on_off = (int)data;
                 fan_on();
                 led_on();
-            } else if (on_off == 0) {
+            } else if ((int)data == 0) {
+                on_off = (int)data;
                 fan_off();
                 led_off();
             } else
