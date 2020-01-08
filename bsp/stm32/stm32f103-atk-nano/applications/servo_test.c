@@ -17,7 +17,7 @@
 
 #ifndef ULOG_USING_SYSLOG
     #define LOG_TAG "SERVO"
-    #define LOG_LVL LOG_LVL_INFO
+    #define LOG_LVL LOG_LVL_ASSERT
     #include <ulog.h>
 #else
     #include <syslog.h>
@@ -90,6 +90,8 @@ static void servo_run(struct rt_work *work, void *param)
     ptr_work_status = work->work_data;
     int8_t count;
     LOG_I("enter servo run");
+    // FIXME: 在屏蔽ulog输出后，需增加相应的延时，才能正常控制舵机
+    rt_thread_mdelay(200);
     for (;;) {
         /*
          * FIXME: 目前测试发现，首次设置完舵机角度后，需要等一段时间，
