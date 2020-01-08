@@ -103,6 +103,22 @@ static void servo_run(struct rt_work *work, void *param)
             count--;
             set_servo_angle(DUMP_SERVO, 90);
         }
+        if (auto_mode) {
+            for (uint8_t i = 0; i < 180; i++) {
+                set_servo_angle(UP_SERVO, i);
+                set_servo_angle(DOWN_SERVO, i);
+                rt_thread_mdelay(20);
+                if (*ptr_work_status == 0)
+                    break;
+            }
+            for (int16_t i = 180; i > 0; i--) {
+                set_servo_angle(UP_SERVO, i);
+                set_servo_angle(DOWN_SERVO, i);
+                rt_thread_mdelay(20);
+                if (*ptr_work_status == 0)
+                    break;
+            }
+        }
         rt_thread_mdelay(100);
         if (*ptr_work_status == 0)
             break;
@@ -155,6 +171,16 @@ static int servo_write(void *cmd, void *data)
                 auto_mode = 0;
             } else {
                 return -1;
+            }
+
+            /*
+             * FIXME: 目前测试发现，首次设置完舵机角度后，需要等一段时间，
+             * 再重复设置多次才正常
+             */
+            set_servo_angle(DUMP_SERVO, 90);
+            if (first_flag == 0) {
+                update_flag = 1;
+                first_flag  = 1;
             }
             return 0;
         }
