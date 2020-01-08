@@ -40,7 +40,7 @@ static const char *CMD_DOWN_SERVO_DEGREE = "舵机下";
 static const char *CMD_AUTO_MODE         = "自动模式";
 static const char *CMD_RESET             = "reset";
 
-volatile static int     up_degree = 0, down_degree = 0, auto_mode = 0;
+volatile static int     up_degree = -1, down_degree = -1, auto_mode = 0;
 volatile static uint8_t first_flag  = 0;
 volatile static uint8_t update_flag = 0;
 
@@ -112,6 +112,8 @@ static void servo_run(struct rt_work *work, void *param)
             for (uint8_t i = 0; i < 180; i++) {
                 set_servo_angle(UP_SERVO, i);
                 set_servo_angle(DOWN_SERVO, i);
+                if (!auto_mode)
+                    break;
                 rt_thread_mdelay(20);
                 if (*ptr_work_status == 0)
                     break;
@@ -119,10 +121,15 @@ static void servo_run(struct rt_work *work, void *param)
             for (int16_t i = 180; i > 0; i--) {
                 set_servo_angle(UP_SERVO, i);
                 set_servo_angle(DOWN_SERVO, i);
+                if (!auto_mode)
+                    break;
                 rt_thread_mdelay(20);
                 if (*ptr_work_status == 0)
                     break;
             }
+        } else {
+            set_servo_angle(UP_SERVO, up_degree);
+            set_servo_angle(DOWN_SERVO, down_degree);
         }
         rt_thread_mdelay(100);
         if (*ptr_work_status == 0)
@@ -148,6 +155,7 @@ static int servo_write(void *cmd, void *data)
             } else {
                 return -1;
             }
+            auto_mode = 0;
             return 0;
         }
 
@@ -166,6 +174,7 @@ static int servo_write(void *cmd, void *data)
             } else {
                 return -1;
             }
+            auto_mode = 0;
             return 0;
         }
 
