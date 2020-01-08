@@ -64,6 +64,9 @@ static void set_servo_angle(uint8_t servo_num, int angle)
      */
 
     RT_ASSERT(dev);
+    if (angle < 0 || angle > 180) {
+        return;
+    }
     uint16_t end_time;
     end_time = angle * (500 - 100) / 180 + 100;
     pca9685_set_pwm(dev, servo_num, 0, end_time);
