@@ -32,6 +32,8 @@ static rt_thread_t tid = RT_NULL;
 static rt_slist_t   _module_list;
 static fro_module_t current_module = RT_NULL;
 
+static uint8_t servo_test_mode = 0;
+
 const char *fro_module_name     = RT_NULL;
 char *      fro_module_info_str = RT_NULL;
 
@@ -61,6 +63,17 @@ static uint8_t get_fro_module_type(void)
         tmp |= rt_pin_read(PC5) << 5;
 
         if (tmp == module_type) {
+            if (tmp == M_NONE) {
+                /**
+                 * FIXME: 当前舵机调试板上没有识别电阻，所以采用这种取巧的方式；
+                 * 当识别不到模块，且收到"name"值为"舵机调试"的JSON格式指令，
+                 * 则判断当前模块为"舵机调试"
+                 */
+                if (servo_test_mode) {
+                    return M_SERVO_TEST;
+                }
+            }
+            servo_test_mode = 0;
             return module_type;
         }
 
@@ -124,13 +137,33 @@ int fro_module_handler(cJSON *req_json, cJSON *reply_json)
 
     int ret;
 
-    if (current_module == RT_NULL) {
-        ret = -1;
-        goto __end;
-    }
     /* 判断请求命令的设备名称是否与模块名称一致 */
     name = cJSON_GetObjectItemCaseSensitive(req_json, "name");
     if (!cJSON_IsString(name) || (name->valuestring == RT_NULL)) {
+        ret = -1;
+        goto __end;
+    }
+
+    /**
+     * FIXME: 当前舵机调试板上没有识别电阻，所以采用这种取巧的方式；
+     * 当识别不到模块，且收到"name"值为"舵机调试"的JSON格式指令，
+     * 则判断当前模块为"舵机调试"
+     */
+    if (rt_strcmp("舵机调试", name->valuestring) == 0) {
+        if (servo_test_mode == 0) {
+            servo_test_mode = 1;
+            ret             = 0;
+            if (cJSON_AddStringToObject(reply_json,
+                                        "msg",
+                                        "已进入舵机调试模式") == RT_NULL) {
+                ret = -1;
+                goto __end;
+            }
+            goto __end;
+        }
+    }
+
+    if (current_module == RT_NULL) {
         ret = -1;
         goto __end;
     }

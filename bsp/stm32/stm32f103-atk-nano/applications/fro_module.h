@@ -38,6 +38,7 @@ typedef enum
     M_CONDENSATION   = 0X35, // 结露
     M_PM25           = 0X0B, // pm2.5
     M_RFID           = 0X29, // RFID
+    M_SERVO_TEST     = 0xFF, //舵机测试
 } FRO_MODULE_TYPE;
 
 struct fro_module_ops
@@ -66,7 +67,7 @@ extern char *      fro_module_info_str;
 
 int          fro_module_register(fro_module_t m);
 fro_module_t get_current_module(void);
-char *get_current_module_name(void);
+char *       get_current_module_name(void);
 
 #ifdef __cplusplus
 }

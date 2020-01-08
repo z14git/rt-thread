@@ -222,6 +222,8 @@
 #define INFRARED_RECEIVE_PIN 0
 #define INFRARED_RECEIVE_HWTIMER "timer4"
 #define PKG_USING_INFRARED_LATEST_VERSION
+#define PKG_USING_PCA9685
+#define PKG_USING_PCA9685_V100
 
 /* miscellaneous packages */
 
