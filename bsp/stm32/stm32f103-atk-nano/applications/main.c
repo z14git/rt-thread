@@ -48,11 +48,6 @@ int main(void)
         rt_pin_write(LED0_PIN, PIN_LOW);
         rt_pin_write(LED1_PIN, PIN_LOW);
         rt_thread_mdelay(500);
-
-        /* 每3秒发送一次'hola'，用于DB9测试 */
-        if (count % 3 == 0) {
-            rt_kprintf("hola\n");
-        }
     }
 
     return RT_EOK;
