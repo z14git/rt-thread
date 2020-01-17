@@ -25,6 +25,19 @@
     #include <syslog.h>
 #endif /* ULOG_USING_SYSLOG */
 
+#define PC0 GET_PIN(C, 0)
+#define PC1 GET_PIN(C, 1)
+#define PC2 GET_PIN(C, 2)
+#define PC3 GET_PIN(C, 3)
+#define PC4 GET_PIN(C, 4)
+#define PC5 GET_PIN(C, 5)
+
+#define PA0 GET_PIN(A, 0)
+#define PA1 GET_PIN(A, 1)
+#define PA2 GET_PIN(A, 2)
+#define PA3 GET_PIN(A, 3)
+#define PA4 GET_PIN(A, 4)
+
 #define THREAD_PRIORITY   25
 #define THREAD_STACK_SIZE 2048
 #define THREAD_TIMESLICE  5
@@ -70,7 +83,8 @@ static U8G2_SH1106_128X64_NONAME_F_4W_SW_SPI u8g2(U8G2_R0,
                                                   /* dc=*/OLED_SPI_PIN_DC,
                                                   /* reset=*/OLED_SPI_PIN_RES);
 
-static const char *string_list = "EEPROM\n"
+static const char *string_list = "模块IO\n"
+                                 "EEPROM\n"
                                  "OLED\n"
                                  "蜂鸣器\n"
                                  "SPI FLASH\n"
@@ -84,7 +98,8 @@ static const char *string_list = "EEPROM\n"
  */
 enum SELECTED_MENU_TYPE
 {
-    MENU_EEPROM = 1,
+    MENU_IO = 1,
+    MENU_EEPROM,
     MENU_OLED,
     MENU_BEEP,
     MENU_SPI_FLASH,
@@ -492,6 +507,51 @@ static void auto_test(void)
     }
 }
 
+static void io_test(void)
+{
+    rt_pin_mode(PC0, PIN_MODE_OUTPUT);
+    rt_pin_mode(PC1, PIN_MODE_OUTPUT);
+    rt_pin_mode(PC2, PIN_MODE_OUTPUT);
+    rt_pin_mode(PC3, PIN_MODE_OUTPUT);
+    rt_pin_mode(PC4, PIN_MODE_OUTPUT);
+    rt_pin_mode(PC5, PIN_MODE_OUTPUT);
+
+    rt_pin_mode(PA0, PIN_MODE_OUTPUT);
+    rt_pin_mode(PA1, PIN_MODE_OUTPUT);
+    rt_pin_mode(PA2, PIN_MODE_OUTPUT);
+    rt_pin_mode(PA3, PIN_MODE_OUTPUT);
+    rt_pin_mode(PA4, PIN_MODE_OUTPUT);
+    for (int i = 0; i < 4; i++) {
+        rt_pin_write(PC0, PIN_HIGH);
+        rt_pin_write(PC1, PIN_HIGH);
+        rt_pin_write(PC2, PIN_HIGH);
+        rt_pin_write(PC3, PIN_HIGH);
+        rt_pin_write(PC4, PIN_HIGH);
+        rt_pin_write(PC5, PIN_HIGH);
+
+        rt_pin_write(PA0, PIN_HIGH);
+        rt_pin_write(PA1, PIN_HIGH);
+        rt_pin_write(PA2, PIN_HIGH);
+        rt_pin_write(PA3, PIN_HIGH);
+        rt_pin_write(PA4, PIN_HIGH);
+        rt_thread_mdelay(500);
+
+        rt_pin_write(PC0, PIN_LOW);
+        rt_pin_write(PC1, PIN_LOW);
+        rt_pin_write(PC2, PIN_LOW);
+        rt_pin_write(PC3, PIN_LOW);
+        rt_pin_write(PC4, PIN_LOW);
+        rt_pin_write(PC5, PIN_LOW);
+
+        rt_pin_write(PA0, PIN_LOW);
+        rt_pin_write(PA1, PIN_LOW);
+        rt_pin_write(PA2, PIN_LOW);
+        rt_pin_write(PA3, PIN_LOW);
+        rt_pin_write(PA4, PIN_LOW);
+        rt_thread_mdelay(500);
+    }
+}
+
 static void board_test_thread_entry(void *parameter)
 {
     auto_test();
@@ -503,6 +563,9 @@ static void board_test_thread_entry(void *parameter)
                                                             string_list);
 
         switch (current_selection) {
+        case MENU_IO:
+            io_test();
+            break;
         case MENU_EEPROM:
             draw_eeprom_test();
             break;
