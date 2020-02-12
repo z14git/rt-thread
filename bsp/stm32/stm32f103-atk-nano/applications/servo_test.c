@@ -13,7 +13,7 @@
 #include <rtdevice.h>
 #include <board.h>
 #include "fro_module.h"
-#include "pca9685.h"
+#include "drv_pca9685.h"
 
 #ifndef ULOG_USING_SYSLOG
     #define LOG_TAG "SERVO"
@@ -30,7 +30,6 @@
 
 #define UP_SERVO   1
 #define DOWN_SERVO 0
-#define DUMP_SERVO 3
 
 static struct fro_module servo;
 static pca9685_device_t  dev = RT_NULL;
@@ -38,11 +37,8 @@ static pca9685_device_t  dev = RT_NULL;
 static const char *CMD_UP_SERVO_DEGREE   = "舵机上";
 static const char *CMD_DOWN_SERVO_DEGREE = "舵机下";
 static const char *CMD_AUTO_MODE         = "自动模式";
-static const char *CMD_RESET             = "reset";
 
 volatile static int     up_degree = -1, down_degree = -1, auto_mode = 0;
-volatile static uint8_t first_flag  = 0;
-volatile static uint8_t update_flag = 0;
 
 /**
  * @brief 设置舵机角度
@@ -69,7 +65,7 @@ static void set_servo_angle(uint8_t servo_num, int angle)
     }
     uint16_t end_time;
     end_time = angle * (500 - 100) / 180 + 100;
-    pca9685_set_pwm(dev, servo_num, 0, end_time);
+    dev->ops->set_pwm(dev, servo_num, 0, end_time);
 }
 
 static int servo_init(void)
@@ -79,10 +75,11 @@ static int servo_init(void)
     rt_pin_write(SDA_PIN, PIN_HIGH);
     rt_pin_write(SCL_PIN, PIN_HIGH);
 
-    dev = pca9685_init(I2C_BUS, 0x60);
+    dev = pca9685_device_create(I2C_BUS, 0x60);
 
     RT_ASSERT(dev);
-    pca9685_set_pwm_freq(dev, 50);
+    dev->ops->init(dev);
+    dev->ops->set_pwm_freq(dev, 50);
 
     return 0;
 }
@@ -91,23 +88,8 @@ static void servo_run(struct rt_work *work, void *param)
 {
     uint32_t *ptr_work_status;
     ptr_work_status = work->work_data;
-    int8_t count;
     LOG_I("enter servo run");
-    // FIXME: 在屏蔽ulog输出后，需增加相应的延时，才能正常控制舵机
-    rt_thread_mdelay(200);
     for (;;) {
-        /*
-         * FIXME: 目前测试发现，首次设置完舵机角度后，需要等一段时间，
-         * 再重复设置多次才正常
-         */
-        if (update_flag) {
-            update_flag = 0;
-            count       = 10;
-        }
-        if (count > 0) {
-            count--;
-            set_servo_angle(DUMP_SERVO, 90);
-        }
         if (auto_mode) {
             for (uint8_t i = 0; i < 180; i++) {
                 set_servo_angle(UP_SERVO, i);
@@ -131,7 +113,7 @@ static void servo_run(struct rt_work *work, void *param)
             set_servo_angle(UP_SERVO, up_degree);
             set_servo_angle(DOWN_SERVO, down_degree);
         }
-        rt_thread_mdelay(100);
+        rt_thread_mdelay(300); // BUG?:若间隔太小舵机可能不会转
         if (*ptr_work_status == 0)
             break;
     }
@@ -144,14 +126,6 @@ static int servo_write(void *cmd, void *data)
             if ((int)data >= 0 && (int)data <= 180) {
                 up_degree = (int)data;
                 set_servo_angle(UP_SERVO, up_degree);
-                /*
-                 * FIXME: 目前测试发现，首次设置完舵机角度后，需要等一段时间，
-                 * 再重复设置多次才正常
-                 */
-                if (first_flag == 0) {
-                    first_flag  = 1;
-                    update_flag = 1;
-                }
             } else {
                 return -1;
             }
@@ -163,14 +137,6 @@ static int servo_write(void *cmd, void *data)
             if ((int)data >= 0 && (int)data <= 180) {
                 down_degree = (int)data;
                 set_servo_angle(DOWN_SERVO, down_degree);
-                /*
-                 * FIXME: 目前测试发现，首次设置完舵机角度后，需要等一段时间，
-                 * 再重复设置多次才正常
-                 */
-                if (first_flag == 0) {
-                    update_flag = 1;
-                    first_flag  = 1;
-                }
             } else {
                 return -1;
             }
@@ -187,20 +153,6 @@ static int servo_write(void *cmd, void *data)
                 return -1;
             }
 
-            /*
-             * FIXME: 目前测试发现，首次设置完舵机角度后，需要等一段时间，
-             * 再重复设置多次才正常
-             */
-            set_servo_angle(DUMP_SERVO, 90);
-            if (first_flag == 0) {
-                update_flag = 1;
-                first_flag  = 1;
-            }
-            return 0;
-        }
-
-        if (rt_strcmp((char *)cmd, CMD_RESET) == 0) {
-            pca9685_restart(dev);
             return 0;
         }
 
