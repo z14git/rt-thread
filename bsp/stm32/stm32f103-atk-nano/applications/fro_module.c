@@ -32,8 +32,6 @@ static rt_thread_t tid = RT_NULL;
 static rt_slist_t   _module_list;
 static fro_module_t current_module = RT_NULL;
 
-static uint8_t servo_test_mode = 0;
-
 const char *fro_module_name     = RT_NULL;
 char *      fro_module_info_str = RT_NULL;
 
@@ -63,17 +61,6 @@ static uint8_t get_fro_module_type(void)
         tmp |= rt_pin_read(PC5) << 5;
 
         if (tmp == module_type) {
-            if (tmp == M_NONE) {
-                /**
-                 * FIXME: 当前舵机调试板上没有识别电阻，所以采用这种取巧的方式；
-                 * 当识别不到模块，且收到"name"值为"舵机调试"的JSON格式指令，
-                 * 则判断当前模块为"舵机调试"
-                 */
-                if (servo_test_mode) {
-                    return M_SERVO_TEST;
-                }
-            }
-            servo_test_mode = 0;
             return module_type;
         }
 
@@ -86,7 +73,6 @@ int fro_module_register(fro_module_t m)
 {
     RT_ASSERT(m != RT_NULL);
     RT_ASSERT(m->ops != RT_NULL);
-    RT_ASSERT(m->type != RT_NULL);
 
     rt_slist_append(&_module_list, &m->list);
 
@@ -142,25 +128,6 @@ int fro_module_handler(cJSON *req_json, cJSON *reply_json)
     if (!cJSON_IsString(name) || (name->valuestring == RT_NULL)) {
         ret = -1;
         goto __end;
-    }
-
-    /**
-     * FIXME: 当前舵机调试板上没有识别电阻，所以采用这种取巧的方式；
-     * 当识别不到模块，且收到"name"值为"舵机调试"的JSON格式指令，
-     * 则判断当前模块为"舵机调试"
-     */
-    if (rt_strcmp("舵机调试", name->valuestring) == 0) {
-        if (servo_test_mode == 0) {
-            servo_test_mode = 1;
-            ret             = 0;
-            if (cJSON_AddStringToObject(reply_json,
-                                        "msg",
-                                        "已进入舵机调试模式") == RT_NULL) {
-                ret = -1;
-                goto __end;
-            }
-            goto __end;
-        }
     }
 
     if (current_module == RT_NULL) {
@@ -379,12 +346,12 @@ INIT_ENV_EXPORT(fro_module_init);
 
 static int fro_module_type_detect_io_init(void)
 {
-    rt_pin_mode(PC0, PIN_MODE_INPUT);
-    rt_pin_mode(PC1, PIN_MODE_INPUT);
-    rt_pin_mode(PC2, PIN_MODE_INPUT);
-    rt_pin_mode(PC3, PIN_MODE_INPUT);
-    rt_pin_mode(PC4, PIN_MODE_INPUT);
-    rt_pin_mode(PC5, PIN_MODE_INPUT);
+    rt_pin_mode(PC0, PIN_MODE_INPUT_PULLUP);
+    rt_pin_mode(PC1, PIN_MODE_INPUT_PULLUP);
+    rt_pin_mode(PC2, PIN_MODE_INPUT_PULLUP);
+    rt_pin_mode(PC3, PIN_MODE_INPUT_PULLUP);
+    rt_pin_mode(PC4, PIN_MODE_INPUT_PULLUP);
+    rt_pin_mode(PC5, PIN_MODE_INPUT_PULLUP);
     return 0;
 }
 INIT_ENV_EXPORT(fro_module_type_detect_io_init);
