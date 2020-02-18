@@ -61,13 +61,12 @@ static void set_servo_angle(uint8_t servo_num, int angle)
 {
     /**
      * 舵机角度 - end_time数值 - 高电平时间对应关系：
-     * 0℃ -- 100 -- 0.5ms
-     * 180℃ -- 500 -- 2.5ms
+     * 0℃ -- 102 -- 0.5ms
+     * 180℃ -- 512 -- 2.5ms
      * 
      * 该对应关系的由来：
-     * 50hz * 0.982(pca9685的驱动中使用了这个常数) = 49.1hz ≈ 49
-     * 0.5ms / (1s/49) * 4096 = 100.352 ≈ 100
-     * 2.5ms / (1s/49) * 4096 = 501.76 ≈ 500
+     * 0.5ms / (1s/50hz) * 4096 = 102.4 ≈ 102
+     * 2.5ms / (1s/50hz) * 4096 = 512
      */
 
     RT_ASSERT(dev);
@@ -75,7 +74,7 @@ static void set_servo_angle(uint8_t servo_num, int angle)
         return;
     }
     uint16_t end_time;
-    end_time = angle * (500 - 100) / 180 + 100;
+    end_time = angle * (512 - 102) / 180 + 102;
     dev->ops->set_pwm(dev, servo_num, 0, end_time);
 }
 
