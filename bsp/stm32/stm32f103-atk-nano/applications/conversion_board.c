@@ -1,7 +1,7 @@
 /**
- * @file servo_test.c
+ * @file conversion_board.c
  * @author z14git
- * @brief 舵机测试程序，生产用
+ * @brief 转接板测试程序，生产用
  * @version 0.1
  * @date 2020-01-06
  * 
@@ -14,7 +14,7 @@
 #include <board.h>
 #include "fro_module.h"
 #include "drv_pca9685.h"
-
+#include "drv_motor.h"
 #ifndef ULOG_USING_SYSLOG
     #define LOG_TAG "SERVO"
     #define LOG_LVL LOG_LVL_ASSERT
@@ -31,14 +31,25 @@
 #define UP_SERVO   1
 #define DOWN_SERVO 0
 
-static struct fro_module servo;
-static pca9685_device_t  dev = RT_NULL;
+#define AIN1 10
+#define AIN2 9
+#define PWMA 8
+#define BIN1 11
+#define BIN2 12
+#define PWMB 13
+
+static struct fro_module    servo;
+static pca9685_device_t     dev    = RT_NULL;
+static struct tb6612_motor *lmotor = RT_NULL;
+static struct tb6612_motor *rmotor = RT_NULL;
 
 static const char *CMD_UP_SERVO_DEGREE   = "舵机上";
 static const char *CMD_DOWN_SERVO_DEGREE = "舵机下";
 static const char *CMD_AUTO_MODE         = "自动模式";
+static const char *CMD_LEFT_MOTOR        = "电机左";
+static const char *CMD_RIGHT_MOTOR       = "电机右";
 
-volatile static int     up_degree = -1, down_degree = -1, auto_mode = 0;
+volatile static int up_degree = -1, down_degree = -1, auto_mode = 0;
 
 /**
  * @brief 设置舵机角度
@@ -70,6 +81,14 @@ static void set_servo_angle(uint8_t servo_num, int angle)
 
 static int servo_init(void)
 {
+    static struct tb6612_pin pin1, pin2;
+    pin1.in1 = AIN1;
+    pin1.in2 = AIN2;
+    pin1.pwm = PWMA;
+    pin2.in1 = BIN1;
+    pin2.in2 = BIN2;
+    pin2.pwm = PWMB;
+
     rt_pin_mode(SDA_PIN, PIN_MODE_OUTPUT_OD);
     rt_pin_mode(SCL_PIN, PIN_MODE_OUTPUT_OD);
     rt_pin_write(SDA_PIN, PIN_HIGH);
@@ -81,6 +100,8 @@ static int servo_init(void)
     dev->ops->init(dev);
     dev->ops->set_pwm_freq(dev, 50);
 
+    lmotor = create_motor_device(&pin2, dev);
+    rmotor = create_motor_device(&pin1, dev);
     return 0;
 }
 
@@ -156,6 +177,16 @@ static int servo_write(void *cmd, void *data)
             return 0;
         }
 
+        if (rt_strcmp((char *)cmd, CMD_LEFT_MOTOR) == 0) {
+            lmotor->ops->set_throttle(lmotor, (int)data);
+            return 0;
+        }
+
+        if (rt_strcmp((char *)cmd, CMD_RIGHT_MOTOR) == 0) {
+            rmotor->ops->set_throttle(rmotor, (int)data);
+            return 0;
+        }
+
         return -1;
     }
     return 0;
@@ -187,6 +218,7 @@ static void servo_deinit(void)
 {
     rt_pin_mode(SCL_PIN, PIN_MODE_INPUT);
     rt_pin_mode(SDA_PIN, PIN_MODE_INPUT);
+    //TODO: delete all pca9685_device_t and struct tb6612_motor * object
 }
 
 static const struct fro_module_ops servo_ops = {
