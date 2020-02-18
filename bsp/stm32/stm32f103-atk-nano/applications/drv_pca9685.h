@@ -12,6 +12,10 @@
 #ifndef __DRV_PCA9685_H
 #define __DRV_PCA9685_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <rtthread.h>
 #include <rtdevice.h>
 
@@ -36,5 +40,8 @@ struct pca9685_ops
 
 struct pca9685_device *pca9685_device_create(const char *bus_name,
                                              uint8_t     i2c_addr);
+#ifdef __cplusplus
+}
+#endif
 
 #endif // __DRV_PCA9685_H
