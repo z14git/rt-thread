@@ -580,6 +580,7 @@ __start_reply:
         RT_DEVICE_OFLAG_RDWR | RT_DEVICE_FLAG_INT_RX | RT_DEVICE_FLAG_STREAM;
     rt_device_write(uart_model, 0, string, rt_strnlen(string, 512));
     uart_model->open_flag = old_flag;
+    cJSON_free(string);
 __end:
     cJSON_Delete(req_json);
     cJSON_Delete(reply_json);
