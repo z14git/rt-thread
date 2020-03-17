@@ -20,7 +20,11 @@
 
 int main(void)
 {
-    int count = 1;
+    extern void u8g2_init(void);
+    extern int  board_test_init(void);
+    extern int  module_info_init(void);
+    extern int  module_test_init(void);
+
     /* set LED0 pin mode to output */
     rt_pin_mode(LED0_PIN, PIN_MODE_OUTPUT);
     rt_pin_mode(LED1_PIN, PIN_MODE_OUTPUT);
@@ -40,7 +44,14 @@ int main(void)
         }
     }
 
-    while (count++) {
+    u8g2_init();
+    if (get_current_module() == RT_NULL) {
+        board_test_init();
+    } else {
+        module_info_init();
+        module_test_init();
+    }
+    while (1) {
         /* LED灯测试 */
         rt_pin_write(LED0_PIN, PIN_HIGH);
         rt_pin_write(LED1_PIN, PIN_HIGH);

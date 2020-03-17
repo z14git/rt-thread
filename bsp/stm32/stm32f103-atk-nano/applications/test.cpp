@@ -132,8 +132,6 @@ static const char *db9_test_explain = "用串口线连接电脑\n"
 
 static uint8_t current_selection = 0;
 
-static rt_thread_t tid = RT_NULL;
-
 static void first_screen(void)
 {
     int8_t event;
@@ -620,7 +618,11 @@ static void module_info_thread(void *parameter)
     }
 }
 
-static void u8g2_init(void)
+extern "C" void u8g2_init(void);
+extern "C" int  board_test_init(void);
+extern "C" int  module_info_init(void);
+
+void u8g2_init(void)
 {
     u8g2.begin(/*Select=*/U8G2_PIN_SELECT,
                /*Right/Next=*/U8G2_PIN_RIGHT,
@@ -634,28 +636,34 @@ static void u8g2_init(void)
     u8g2.setFontDirection(0);
 }
 
-static int test_init(void)
+int board_test_init(void)
 {
-    u8g2_init();
-
-    if (get_current_module() == RT_NULL) {
-        tid = rt_thread_create("BoardTest",
-                               board_test_thread_entry,
-                               RT_NULL,
-                               THREAD_STACK_SIZE,
-                               THREAD_PRIORITY,
-                               THREAD_TIMESLICE);
-    } else {
-        tid = rt_thread_create("ModuleInfo",
-                               module_info_thread,
-                               RT_NULL,
-                               THREAD_STACK_SIZE,
-                               THREAD_PRIORITY,
-                               THREAD_TIMESLICE);
-    }
-    if (tid != RT_NULL)
+    rt_thread_t tid = RT_NULL;
+    tid             = rt_thread_create("BoardTest",
+                           board_test_thread_entry,
+                           RT_NULL,
+                           THREAD_STACK_SIZE,
+                           THREAD_PRIORITY,
+                           THREAD_TIMESLICE);
+    if (tid != RT_NULL) {
         rt_thread_startup(tid);
-
-    return 0;
+        return 0;
+    } else
+        return -1;
 }
-INIT_APP_EXPORT(test_init);
+
+int module_info_init(void)
+{
+    rt_thread_t tid = RT_NULL;
+    tid             = rt_thread_create("ModuleInfo",
+                           module_info_thread,
+                           RT_NULL,
+                           THREAD_STACK_SIZE,
+                           THREAD_PRIORITY,
+                           THREAD_TIMESLICE);
+    if (tid != RT_NULL) {
+        rt_thread_startup(tid);
+        return 0;
+    } else
+        return -1;
+}

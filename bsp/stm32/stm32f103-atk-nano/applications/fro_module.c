@@ -406,7 +406,7 @@ static void module_test_thread_entry(void *parameter)
     }
 }
 
-static int module_test_init(void)
+int module_test_init(void)
 {
     tid = rt_thread_create("m_test",
                            module_test_thread_entry,
@@ -418,4 +418,3 @@ static int module_test_init(void)
         rt_thread_startup(tid);
     return 0;
 }
-INIT_APP_EXPORT(module_test_init);
