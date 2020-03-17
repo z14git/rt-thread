@@ -519,6 +519,55 @@ static void io_test(void)
     rt_pin_mode(PA2, PIN_MODE_OUTPUT);
     rt_pin_mode(PA3, PIN_MODE_OUTPUT);
     rt_pin_mode(PA4, PIN_MODE_OUTPUT);
+    
+    /* 全关 */
+    rt_pin_write(PC0, PIN_HIGH);
+    rt_pin_write(PC1, PIN_HIGH);
+    rt_pin_write(PC2, PIN_HIGH);
+    rt_pin_write(PC3, PIN_HIGH);
+    rt_pin_write(PC4, PIN_HIGH);
+    rt_pin_write(PC5, PIN_HIGH);
+    rt_pin_write(PA0, PIN_HIGH);
+    rt_pin_write(PA1, PIN_HIGH);
+    rt_pin_write(PA2, PIN_HIGH);
+    rt_pin_write(PA3, PIN_HIGH);
+    rt_pin_write(PA4, PIN_HIGH);
+
+    rt_pin_write(PC0, PIN_LOW);
+    rt_thread_mdelay(500);
+    rt_pin_write(PC0, PIN_HIGH);
+    rt_pin_write(PC1, PIN_LOW);
+    rt_thread_mdelay(500);
+    rt_pin_write(PC1, PIN_HIGH);
+    rt_pin_write(PC2, PIN_LOW);
+    rt_thread_mdelay(500);
+    rt_pin_write(PC2, PIN_HIGH);
+    rt_pin_write(PC3, PIN_LOW);
+    rt_thread_mdelay(500);
+    rt_pin_write(PC3, PIN_HIGH);
+    rt_pin_write(PC4, PIN_LOW);
+    rt_thread_mdelay(500);
+    rt_pin_write(PC4, PIN_HIGH);
+    rt_pin_write(PC5, PIN_LOW);
+    rt_thread_mdelay(500);
+    rt_pin_write(PC5, PIN_HIGH);
+
+    rt_pin_write(PA0, PIN_LOW);
+    rt_thread_mdelay(500);
+    rt_pin_write(PA0, PIN_HIGH);
+    rt_pin_write(PA1, PIN_LOW);
+    rt_thread_mdelay(500);
+    rt_pin_write(PA1, PIN_HIGH);
+    rt_pin_write(PA2, PIN_LOW);
+    rt_thread_mdelay(500);
+    rt_pin_write(PA2, PIN_HIGH);
+    rt_pin_write(PA3, PIN_LOW);
+    rt_thread_mdelay(500);
+    rt_pin_write(PA3, PIN_HIGH);
+    rt_pin_write(PA4, PIN_LOW);
+    rt_thread_mdelay(500);
+    rt_pin_write(PA4, PIN_HIGH);
+
     for (int i = 0; i < 4; i++) {
         rt_pin_write(PC0, PIN_HIGH);
         rt_pin_write(PC1, PIN_HIGH);
