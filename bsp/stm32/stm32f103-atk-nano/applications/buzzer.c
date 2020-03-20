@@ -73,7 +73,7 @@ static void MX_TIM2_Init(void)
     oc_config.OCPolarity = TIM_OCPOLARITY_HIGH;
     oc_config.OCFastMode = TIM_OCFAST_DISABLE;
 
-    if (HAL_TIM_PWM_ConfigChannel(&htim2, &oc_config, TIM_CHANNEL_2) !=
+    if (HAL_TIM_PWM_ConfigChannel(&htim2, &oc_config, TIM_CHANNEL_1) !=
         HAL_OK) {
         goto __exit;
     }
