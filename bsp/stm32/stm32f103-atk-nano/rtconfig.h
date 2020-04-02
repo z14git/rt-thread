@@ -65,7 +65,7 @@
 #define FINSH_USING_SYMTAB
 #define FINSH_USING_DESCRIPTION
 #define FINSH_THREAD_PRIORITY 20
-#define FINSH_THREAD_STACK_SIZE 4096
+#define FINSH_THREAD_STACK_SIZE 10240
 #define FINSH_CMD_SIZE 80
 #define FINSH_USING_MSH
 #define FINSH_USING_MSH_DEFAULT
@@ -95,6 +95,7 @@
 #define RT_USING_ADC
 #define RT_USING_PWM
 #define RT_USING_MTD_NOR
+#define RT_USING_RTC
 #define RT_USING_SPI
 #define RT_USING_SFUD
 #define RT_SFUD_USING_SFDP
@@ -173,6 +174,24 @@
 
 /* language packages */
 
+#define PKG_USING_MICROPYTHON
+
+/* Hardware Module */
+
+
+/* System Module */
+
+#define MICROPYTHON_USING_UOS
+#define MICROPYTHON_USING_FILE_SYNC_VIA_IDE
+
+/* Tools Module */
+
+
+/* Network Module */
+
+#define PKG_MICROPYTHON_HEAP_SIZE 8192
+#define PKG_USING_MICROPYTHON_LATEST_VERSION
+#define PKG_MICROPYTHON_VER_NUM 0x99999
 
 /* multimedia packages */
 
