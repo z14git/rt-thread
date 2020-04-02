@@ -13,10 +13,22 @@
 #include <board.h>
 #include <dfs_fs.h>
 #include "fro_module.h"
+#include <fal.h>
+
+#ifndef ULOG_USING_SYSLOG
+    #define LOG_TAG "main"
+    #define LOG_LVL LOG_LVL_INFO
+    #include <ulog.h>
+#else
+    #include <syslog.h>
+#endif /* ULOG_USING_SYSLOG */
 
 /* defined the LED0 pin: PD2 */
 #define LED0_PIN GET_PIN(D, 2)
 #define LED1_PIN GET_PIN(C, 13)
+
+/* 定义要使用的分区名字 */
+#define FS_PARTITION_NAME "app"
 
 int main(void)
 {
@@ -29,18 +41,27 @@ int main(void)
     rt_pin_mode(LED0_PIN, PIN_MODE_OUTPUT);
     rt_pin_mode(LED1_PIN, PIN_MODE_OUTPUT);
 
-    if (dfs_mount("W25Q128", "/", "elm", 0, 0) == 0) {
-        rt_kprintf("W25Q128 mount to /.\n");
+    struct rt_device *mtd_dev = RT_NULL;
+    /* 初始化 fal */
+    fal_init();
+    /* 生成 mtd 设备 */
+    mtd_dev = fal_mtd_nor_device_create(FS_PARTITION_NAME);
+    if (!mtd_dev) {
+        LOG_E("Can't create a mtd device on '%s' partition.",
+              FS_PARTITION_NAME);
     } else {
-        /* 格式化文件系统 */
-        if (dfs_mkfs("elm", "W25Q128") != 0) {
-            rt_kprintf("create file system failed\n");
-        }
-        rt_kprintf("create file system success\n");
-        if (dfs_mount("W25Q128", "/", "elm", 0, 0) == 0) {
-            rt_kprintf("W25Q128 mount to /.\n");
+        /* 挂载 littlefs */
+        if (dfs_mount(FS_PARTITION_NAME, "/", "lfs", 0, 0) == 0) {
+            LOG_I("Filesystem initialized!");
         } else {
-            rt_kprintf("W25Q128 mount to / failed.\n");
+            /* 格式化文件系统 */
+            dfs_mkfs("lfs", FS_PARTITION_NAME);
+            /* 挂载 littlefs */
+            if (dfs_mount("filesystem", "/", "lfs", 0, 0) == 0) {
+                LOG_I("Filesystem initialized!");
+            } else {
+                LOG_E("Failed to initialize filesystem!");
+            }
         }
     }
 
