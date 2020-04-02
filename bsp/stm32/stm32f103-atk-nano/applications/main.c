@@ -12,35 +12,21 @@
 #include <rtdevice.h>
 #include <board.h>
 #include <dfs_fs.h>
-#include "fro_module.h"
 #include <fal.h>
 
 #ifndef ULOG_USING_SYSLOG
-    #define LOG_TAG "main"
-    #define LOG_LVL LOG_LVL_INFO
-    #include <ulog.h>
+#define LOG_TAG "main"
+#define LOG_LVL LOG_LVL_INFO
+#include <ulog.h>
 #else
-    #include <syslog.h>
+#include <syslog.h>
 #endif /* ULOG_USING_SYSLOG */
-
-/* defined the LED0 pin: PD2 */
-#define LED0_PIN GET_PIN(D, 2)
-#define LED1_PIN GET_PIN(C, 13)
 
 /* 定义要使用的分区名字 */
 #define FS_PARTITION_NAME "app"
 
 int main(void)
 {
-    extern void u8g2_init(void);
-    extern int  board_test_init(void);
-    extern int  module_info_init(void);
-    extern int  module_test_init(void);
-
-    /* set LED0 pin mode to output */
-    rt_pin_mode(LED0_PIN, PIN_MODE_OUTPUT);
-    rt_pin_mode(LED1_PIN, PIN_MODE_OUTPUT);
-
     struct rt_device *mtd_dev = RT_NULL;
     /* 初始化 fal */
     fal_init();
@@ -63,23 +49,6 @@ int main(void)
                 LOG_E("Failed to initialize filesystem!");
             }
         }
-    }
-
-    u8g2_init();
-    if (get_current_module() == RT_NULL) {
-        board_test_init();
-    } else {
-        module_info_init();
-        module_test_init();
-    }
-    while (1) {
-        /* LED灯测试 */
-        rt_pin_write(LED0_PIN, PIN_HIGH);
-        rt_pin_write(LED1_PIN, PIN_HIGH);
-        rt_thread_mdelay(500);
-        rt_pin_write(LED0_PIN, PIN_LOW);
-        rt_pin_write(LED1_PIN, PIN_LOW);
-        rt_thread_mdelay(500);
     }
 
     return RT_EOK;
