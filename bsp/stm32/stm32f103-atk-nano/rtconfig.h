@@ -178,6 +178,7 @@
 
 /* Hardware Module */
 
+#define MICROPYTHON_USING_MACHINE_ADC
 
 /* System Module */
 
@@ -300,6 +301,8 @@
 #define BSP_USING_I2C2
 #define BSP_I2C2_SCL_PIN 24
 #define BSP_I2C2_SDA_PIN 25
+#define BSP_USING_ADC
+#define BSP_USING_ADC1
 
 /* Board extended module Drivers */
 

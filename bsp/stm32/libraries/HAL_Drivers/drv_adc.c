@@ -47,13 +47,21 @@ static rt_err_t stm32_adc_enabled(struct rt_adc_device *device, rt_uint32_t chan
     ADC_HandleTypeDef *stm32_adc_handler;
     RT_ASSERT(device != RT_NULL);
     stm32_adc_handler = device->parent.user_data;
-
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
     if (enabled)
     {
 #if defined(SOC_SERIES_STM32L4) || defined(SOC_SERIES_STM32G0)
         ADC_Enable(stm32_adc_handler);
 #else
         __HAL_ADC_ENABLE(stm32_adc_handler);
+        if (stm32_adc_handler->Instance == ADC1)
+        {
+            __HAL_RCC_ADC1_CLK_ENABLE();
+            __HAL_RCC_GPIOA_CLK_ENABLE();
+            GPIO_InitStruct.Pin = 1 << channel;
+            GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+            HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+        }
 #endif
     }
     else
