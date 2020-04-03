@@ -13,6 +13,7 @@
 #include <board.h>
 #include <dfs_fs.h>
 #include <fal.h>
+#include <dfs_posix.h>
 
 #ifndef ULOG_USING_SYSLOG
 #define LOG_TAG "main"
@@ -51,5 +52,17 @@ int main(void)
         }
     }
 
-    return RT_EOK;
+    extern void mpy_main(const char *filename);
+
+    int fd;
+    fd = open("/main.py", O_RDONLY);
+    if (fd >= 0) {
+        close(fd);
+        mpy_main("main.py");
+    } else {
+        mpy_main(NULL);
+    }
+    for (;;) {
+        mpy_main(NULL);
+    }
 }
