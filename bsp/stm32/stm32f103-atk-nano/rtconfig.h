@@ -178,6 +178,7 @@
 
 /* Hardware Module */
 
+#define MICROPYTHON_USING_MACHINE_UART
 #define MICROPYTHON_USING_MACHINE_ADC
 
 /* System Module */
