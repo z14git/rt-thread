@@ -117,12 +117,12 @@ static int _pwm_servo_set_pos(TIM_HandleTypeDef *htim, uint8_t channel,
 
 static int _servo_set_pos(struct zl_servo_device *device, uint16_t pos)
 {
-        if (device->parameter->type == ZL_PWM_SERVO) {
+        struct zl_servo_parameter *parameter =
+                (struct zl_servo_parameter *)device->parent.user_data;
+        if (parameter->type == ZL_PWM_SERVO) {
                 TIM_HandleTypeDef *htim =
-                        (TIM_HandleTypeDef *)((struct zl_servo_parameter *)
-                                                      device->parent.user_data)
-                                ->handler;
-                uint8_t ch = (device->parameter->channel - 1) << 2;
+                        (TIM_HandleTypeDef *)parameter->handler;
+                uint8_t ch = (parameter->channel - 1) << 2;
                 _pwm_servo_set_pos(htim, ch, pos);
                 device->config.pos = pos;
                 return 0;
@@ -132,7 +132,9 @@ static int _servo_set_pos(struct zl_servo_device *device, uint16_t pos)
 
 static int _servo_read_pos(struct zl_servo_device *device, uint16_t *pos)
 {
-        if (device->parameter->type == ZL_PWM_SERVO) {
+        struct zl_servo_parameter *parameter =
+                (struct zl_servo_parameter *)device->parent.user_data;
+        if (parameter->type == ZL_PWM_SERVO) {
                 *pos = device->config.pos;
                 return 0;
         }
