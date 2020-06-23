@@ -46,6 +46,7 @@ struct zl_servo_device {
 struct zl_servo_ops {
         int (*set_pos)(struct zl_servo_device *servo, uint16_t pos);
         int (*read_pos)(struct zl_servo_device *servo, uint16_t *pos);
+        int (*enable)(struct zl_servo_device *servo, uint8_t enable);
 };
 
 int zl_servo_register(struct zl_servo_device *device, const char *name,

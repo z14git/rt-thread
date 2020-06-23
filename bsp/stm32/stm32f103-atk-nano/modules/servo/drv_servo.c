@@ -141,8 +141,26 @@ static int _servo_read_pos(struct zl_servo_device *device, uint16_t *pos)
         return -1;
 }
 
+static int _servo_enable(struct zl_servo_device *device, uint8_t enable)
+{
+        struct zl_servo_parameter *parameter =
+                (struct zl_servo_parameter *)device->parent.user_data;
+        if (parameter->type == ZL_PWM_SERVO) {
+                TIM_HandleTypeDef *htim =
+                        (TIM_HandleTypeDef *)parameter->handler;
+                uint8_t ch = (parameter->channel - 1) << 2;
+                if (enable) {
+                        return HAL_TIM_PWM_Start(htim, ch);
+                } else {
+                        return HAL_TIM_PWM_Stop(htim, ch);
+                }
+        }
+        return -1;
+}
+
 static struct zl_servo_ops drv_ops = { .set_pos = _servo_set_pos,
-                                       .read_pos = _servo_read_pos };
+                                       .read_pos = _servo_read_pos,
+                                       .enable = _servo_enable };
 
 static int servo_init(void)
 {
