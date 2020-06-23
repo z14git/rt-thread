@@ -36,10 +36,10 @@ typedef enum {
         ZL_PWM_SERVO,
         ZL_SERIAL_SERVO,
 } zl_servo_type;
+
 struct zl_servo_device {
         struct rt_device parent;
         const struct zl_servo_ops *ops;
-        const struct zl_servo_parameter *parameter;
         struct zl_servo_configure config;
 };
 
