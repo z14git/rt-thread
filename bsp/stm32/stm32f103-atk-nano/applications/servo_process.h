@@ -29,6 +29,8 @@ struct adapter_servo_msg {
         uint16_t data;
 };
 
+rt_err_t adapter_servo_msg_put(struct adapter_servo_msg *msg);
+
 #ifdef __cplusplus
 }
 #endif
