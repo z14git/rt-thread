@@ -128,6 +128,25 @@
 
 /* IoT - internet of things */
 
+#define PKG_USING_FREEMODBUS
+#define PKG_MODBUS_SLAVE
+
+/* advanced configuration */
+
+#define RT_S_DISCRETE_INPUT_START 0
+#define RT_S_DISCRETE_INPUT_NDISCRETES 16
+#define RT_S_COIL_START 0
+#define RT_S_COIL_NCOILS 64
+#define RT_S_REG_INPUT_START 0
+#define RT_S_REG_INPUT_NREGS 100
+#define RT_S_REG_HOLDING_START 0
+#define RT_S_REG_HOLDING_NREGS 192
+#define RT_S_HD_RESERVE 0
+#define RT_S_IN_RESERVE 0
+#define RT_S_CO_RESERVE 0
+#define RT_S_DI_RESERVE 0
+#define PKG_MODBUS_SLAVE_RTU
+#define PKG_USING_FREEMODBUS_LATEST_VERSION
 
 /* Wi-Fi */
 
