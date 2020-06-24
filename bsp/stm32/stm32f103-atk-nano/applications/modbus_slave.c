@@ -13,7 +13,49 @@
 #include <rtdevice.h>
 #include <board.h>
 
+#include "mb.h"
 #include "user_mb_app.h"
+#include "servo_process.h"
+
+#ifndef ULOG_USING_SYSLOG
+#define LOG_TAG "MB_SLAVE"
+#define LOG_LVL LOG_LVL_DBG
+#include <ulog.h>
+#else
+#include <syslog.h>
+#endif /* ULOG_USING_SYSLOG */
+
+#define SLAVE_ADDR 14
+#define PORT_NUM 2
+#define PORT_BAUDRATE 115200
+
+#define PORT_PARITY MB_PAR_NONE
+
+#define THREAD_STACK_SIZE 2048
+#define THRAD_PRIORITY 15
+
+typedef enum {
+        ADAPTER_MODBUS_CONFIG_SERVO_ON,
+        ADAPTER_MODBUS_CONFIG_UP_SERVO_ANGLE,
+        ADAPTER_MODBUS_CONFIG_DOWN_SERVO_ANGLE,
+        ADAPTER_MODBUS_CONFIG_LEFT_PIE_TIMEOUT,
+        ADAPTER_MODBUS_CONFIG_RIGHT_PIE_TIMEOUT,
+        ADAPTER_MODBUS_CONFIG_MAX
+} adapter_modbus_config_t;
+
+typedef enum {
+        /* 拔片动作，动作执行完成后自动归0 */
+        ADAPTER_MODBUS_BIT_LEFT_BLOCK, // combine block and pass bit, 10(block:1, pass:0): do block;
+        ADAPTER_MODBUS_BIT_LEFT_PASS, // 01: do pass; 11: auto
+        ADAPTER_MODBUS_BIT_RIGHT_BLOCK,
+        ADAPTER_MODBUS_BIT_RIGHT_PASS,
+        /* 限位开关状态 */
+        ADAPTER_MODBUS_BIT_LEFT_UP,
+        ADAPTER_MODBUS_BIT_LEFT_DOWN,
+        ADAPTER_MODBUS_BIT_RIGHT_UP,
+        ADAPTER_MODBUS_BIT_RIGHT_DOWN,
+        ADAPTER_MODBUS_BIT_MAX
+} adapter_modbus_bit_t;
 
 /*------------------------Slave mode use these variables----------------------*/
 //Slave mode:DiscreteInputs variables
@@ -36,6 +78,25 @@ USHORT usSRegInBuf[S_REG_INPUT_NREGS];
 //Slave mode:HoldingRegister variables
 USHORT usSRegHoldStart = S_REG_HOLDING_START;
 USHORT usSRegHoldBuf[S_REG_HOLDING_NREGS];
+
+static void hold_reg_process(uint16_t index, uint16_t data)
+{
+        struct adapter_servo_msg servo_msg;
+        switch (index) {
+        case ADAPTER_MODBUS_CONFIG_UP_SERVO_ANGLE:
+                servo_msg.cmd = ADAPTER_SERVO_CMD_UP_ANGLE;
+                servo_msg.data = data;
+                adapter_servo_msg_put(&servo_msg);
+                break;
+        case ADAPTER_MODBUS_CONFIG_DOWN_SERVO_ANGLE:
+                servo_msg.cmd = ADAPTER_SERVO_CMD_DOWN_ANGLE;
+                servo_msg.data = data;
+                adapter_servo_msg_put(&servo_msg);
+                break;
+        default:
+                break;
+        }
+}
 
 /**
  * Modbus slave input register callback function.
@@ -132,6 +193,10 @@ eMBErrorCode eMBRegHoldingCB(UCHAR *pucRegBuffer, USHORT usAddress,
                                 pusRegHoldingBuf[iRegIndex] = *pucRegBuffer++
                                                               << 8;
                                 pusRegHoldingBuf[iRegIndex] |= *pucRegBuffer++;
+                                hold_reg_process(iRegIndex,
+                                                 pusRegHoldingBuf[iRegIndex]);
+                                LOG_D("MB_REG_WRITE INDEX: %d, data: %d",
+                                      iRegIndex, pusRegHoldingBuf[iRegIndex]);
                                 iRegIndex++;
                                 usNRegs--;
                         }
@@ -269,3 +334,25 @@ eMBErrorCode eMBRegDiscreteCB(UCHAR *pucRegBuffer, USHORT usAddress,
 
         return eStatus;
 }
+
+static void mb_slave_handler(void *arg)
+{
+        eMBInit(MB_RTU, SLAVE_ADDR, PORT_NUM, PORT_BAUDRATE, PORT_PARITY);
+        eMBEnable();
+        for (;;) {
+                eMBPoll();
+        }
+}
+
+static int mb_slave_start(void)
+{
+        rt_thread_t tid = RT_NULL;
+        tid = rt_thread_create("mb_slave", mb_slave_handler, RT_NULL,
+                               THREAD_STACK_SIZE, THRAD_PRIORITY, 20);
+        if (tid != RT_NULL) {
+                rt_thread_startup(tid);
+                return 0;
+        }
+        return -1;
+}
+INIT_APP_EXPORT(mb_slave_start);
