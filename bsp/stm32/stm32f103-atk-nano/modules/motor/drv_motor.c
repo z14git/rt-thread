@@ -14,7 +14,7 @@
 #include <board.h>
 
 #ifndef ULOG_USING_SYSLOG
-#define LOG_TAG "DRV_SERVO"
+#define LOG_TAG "DRV_MOTOR"
 #define LOG_LVL LOG_LVL_DBG
 #include <ulog.h>
 #else
