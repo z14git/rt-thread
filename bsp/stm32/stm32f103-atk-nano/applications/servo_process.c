@@ -117,7 +117,7 @@ static int adapter_servo_start(void)
         }
         return 0;
 }
-INIT_DEVICE_EXPORT(adapter_servo_start);
+INIT_COMPONENT_EXPORT(adapter_servo_start);
 
 #if defined(RT_USING_FINSH) && defined(FINSH_USING_MSH)
 static int servo_control(int argc, char **argv)
