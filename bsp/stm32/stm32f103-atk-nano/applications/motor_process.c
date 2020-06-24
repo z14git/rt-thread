@@ -61,7 +61,7 @@ static int adapter_motor_start(void)
         }
         return 0;
 }
-INIT_DEVICE_EXPORT(adapter_motor_start);
+INIT_COMPONENT_EXPORT(adapter_motor_start);
 
 #if defined(RT_USING_FINSH) && defined(FINSH_USING_MSH)
 
