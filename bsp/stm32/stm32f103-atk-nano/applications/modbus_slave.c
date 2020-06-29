@@ -73,8 +73,7 @@ static uint8_t modbus_config_buffer[ADAPTER_MODBUS_CONFIG_MAX];
  * @param old_state 保存上一次HOLD REG状态的数组
  * @param mb_mapping 
  */
-static void hold_reg_process(uint8_t *old_state,
-                                 modbus_mapping_t *mb_mapping)
+static void hold_reg_process(uint8_t *old_state, modbus_mapping_t *mb_mapping)
 {
         struct adapter_servo_msg servo_msg;
         struct adapter_motor_msg motor_msg;
@@ -100,15 +99,16 @@ static void hold_reg_process(uint8_t *old_state,
         if (IS_HOLD_REG_UPDATED(ADAPTER_MODBUS_CONFIG_UP_SERVO_ANGLE)) {
                 servo_msg.cmd = ADAPTER_SERVO_CMD_UP_ANGLE;
                 servo_msg.data = mb_mapping->tab_registers
-                                   [ADAPTER_MODBUS_CONFIG_UP_SERVO_ANGLE];
+                                         [ADAPTER_MODBUS_CONFIG_UP_SERVO_ANGLE];
                 adapter_servo_msg_put(&servo_msg);
                 SAVE_HOLD_REG(ADAPTER_MODBUS_CONFIG_UP_SERVO_ANGLE);
         }
 
         if (IS_HOLD_REG_UPDATED(ADAPTER_MODBUS_CONFIG_DOWN_SERVO_ANGLE)) {
                 servo_msg.cmd = ADAPTER_SERVO_CMD_DOWN_ANGLE;
-                servo_msg.data = mb_mapping->tab_registers
-                                   [ADAPTER_MODBUS_CONFIG_DOWN_SERVO_ANGLE];
+                servo_msg.data =
+                        mb_mapping->tab_registers
+                                [ADAPTER_MODBUS_CONFIG_DOWN_SERVO_ANGLE];
                 adapter_servo_msg_put(&servo_msg);
                 SAVE_HOLD_REG(ADAPTER_MODBUS_CONFIG_DOWN_SERVO_ANGLE);
         }
