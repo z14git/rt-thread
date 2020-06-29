@@ -16,6 +16,7 @@
 #include "modbus.h"
 
 #include "servo_process.h"
+#include "motor_process.h"
 
 #ifndef ULOG_USING_SYSLOG
 #define LOG_TAG "MB_SLAVE"
@@ -39,6 +40,8 @@ typedef enum {
         ADAPTER_MODBUS_CONFIG_DOWN_SERVO_ANGLE,
         ADAPTER_MODBUS_CONFIG_LEFT_PIE_TIMEOUT,
         ADAPTER_MODBUS_CONFIG_RIGHT_PIE_TIMEOUT,
+        ADAPTER_MODBUS_CONFIG_LEFT_MOTOR_SPEED,
+        ADAPTER_MODBUS_CONFIG_RIGHT_MOTOR_SPEED,
         ADAPTER_MODBUS_CONFIG_MAX
 } adapter_modbus_config_t;
 
@@ -74,6 +77,7 @@ static void hold_reg_process(uint8_t *old_state,
                                  modbus_mapping_t *mb_mapping)
 {
         struct adapter_servo_msg servo_msg;
+        struct adapter_motor_msg motor_msg;
 
 #define IS_HOLD_REG_UPDATED(x)                                                 \
         !(old_state[x] == (mb_mapping->tab_registers[x] & 0xff))
@@ -107,6 +111,25 @@ static void hold_reg_process(uint8_t *old_state,
                                    [ADAPTER_MODBUS_CONFIG_DOWN_SERVO_ANGLE];
                 adapter_servo_msg_put(&servo_msg);
                 SAVE_HOLD_REG(ADAPTER_MODBUS_CONFIG_DOWN_SERVO_ANGLE);
+        }
+
+        /* handle motor */
+        if (IS_HOLD_REG_UPDATED(ADAPTER_MODBUS_CONFIG_LEFT_MOTOR_SPEED)) {
+                motor_msg.cmd = ADAPTER_MOTOR_CMD_LEFT_SPEED;
+                motor_msg.data =
+                        mb_mapping->tab_registers
+                                [ADAPTER_MODBUS_CONFIG_LEFT_MOTOR_SPEED];
+                adapter_motor_msg_put(&motor_msg);
+                SAVE_HOLD_REG(ADAPTER_MODBUS_CONFIG_LEFT_MOTOR_SPEED);
+        }
+
+        if (IS_HOLD_REG_UPDATED(ADAPTER_MODBUS_CONFIG_RIGHT_MOTOR_SPEED)) {
+                motor_msg.cmd = ADAPTER_MOTOR_CMD_RIGHT_SPEED;
+                motor_msg.data =
+                        mb_mapping->tab_registers
+                                [ADAPTER_MODBUS_CONFIG_RIGHT_MOTOR_SPEED];
+                adapter_motor_msg_put(&motor_msg);
+                SAVE_HOLD_REG(ADAPTER_MODBUS_CONFIG_RIGHT_MOTOR_SPEED);
         }
 }
 
